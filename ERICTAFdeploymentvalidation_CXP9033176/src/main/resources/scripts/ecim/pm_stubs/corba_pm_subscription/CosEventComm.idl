@@ -1,0 +1,64 @@
+/*
+ *  COPYRIGHT
+ *  ---------
+ *  Copyright (C) 1999 by
+ *  Ericsson Radio Systems AB
+ *  SWEDEN
+ *
+ *  The program may be used and/or copied only with the written
+ *  permission from Ericsson Radio System AB, or in accordance with
+ *  the terms and conditions stipulated in the agreement/contract
+ *  under which the program has been supplied. 
+ *   
+ *  All rights reserved.
+ *
+ * IDENTIFICATION
+ * --------------
+ *
+ * @(#) ClearCase ID: CosEventComm.idl /main/2 00-09-08 16:50 eraeryt #
+ * 
+ *
+ * REVISION HISTORY
+ * ----------------
+ *
+ * Revised: ERA/RL/MO Susanne Lundmark  Mars 29, 2000
+ * Change: Created.
+ *
+ */
+
+#ifndef COSEVENTCOMM_IDL
+#define COSEVENTCOMM_IDL
+
+#pragma prefix "omg.org"
+
+module CosEventComm
+{
+         
+   exception Disconnected {};
+         
+   interface PushConsumer
+   {
+      void push(in any data) raises (Disconnected);     
+      void disconnect_push_consumer();
+   };
+         
+   interface PushSupplier
+   {      
+      void disconnect_push_supplier();
+   };
+   
+   interface PullSupplier
+   {
+      any pull() raises (Disconnected);
+      any try_pull(out boolean has_event) raises (Disconnected);
+      void disconnect_pull_supplier();
+   };
+         
+   interface PullConsumer
+   {
+      void disconnect_pull_consumer();
+   };
+
+};
+
+#endif

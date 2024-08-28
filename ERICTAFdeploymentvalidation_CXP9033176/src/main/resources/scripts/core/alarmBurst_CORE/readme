@@ -1,0 +1,28 @@
+#Alarmburst CORE
+
+Prerequisite:
+Start all the nodes of required simulations.
+
+STEPS -
+
+1) Run getNodes.sh script.( run this only once)
+    - This will collect and store data of all started nodes and save in allNodes.job file.
+    sh getNodes.sh
+
+2) Run alarmBurstExecutor_multiple.sh script to trigger alarms.
+    alarmBurstExecutor_multiple.sh args
+    -n <NUM_NODES>
+    -a <NUM_ALARMS>
+    -f <NUM_FREQUENCY>
+    -o <SAR_OPTION> (0 - OFF(by default)/ 1 - ON)
+    -This will internally run alarmburst on selected nodes, collect prmnresponse file , find number of alarms/sec.
+    Also analyse the CPU Usage based on sar logs.
+
+EX -
+sh alarmBurstExecutor_multiple.sh -n 50 -a 150 -f 3 -o 1
+
+NUM_NODES = 50
+NUM_ALARMS = 150
+NUM_FREQUENCY = 3
+Total NUM_ALARMS = NUM_NODES * NUM_FREQUENCY
+This will internally trigger (NUM_ALARMS/NUM_NODES) alarms per node. i.e 150/50 = 3 alarms/node.

@@ -1,0 +1,34 @@
+#!/usr/bin/expect
+set dest [lindex $argv 0];
+set destpath [lindex $argv 1];
+
+set Password "netsim"
+
+spawn ssh netsim@$dest
+set timeout 5
+expect {
+     "assword" {
+        send "$Password\r"
+        exp_continue
+    }
+    "yes/no" {
+        send "yes\r"
+        exp_continue
+    }
+    -re ">" {
+        send "find $destpath -type f | wc -l\r" 
+	expect  ">" 
+	set var $expect_out(buffer); 
+#	expect "^\d*$" {
+#			set count $expect_out(0,string)
+#			send_user "*******$count*****\n"
+#		}
+#	send_user "#####$expect_out(buffer)##########"
+#	expect ""
+	regexp {([0-9])+} $var _ var2
+	send_user "2#####$var##########"
+	send_user "3###$var2###"
+	}
+ }
+#interact
+#exit $count

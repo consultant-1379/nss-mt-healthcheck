@@ -1,0 +1,16 @@
+1. Run the getNodes.sh to get details of all started nodes into allNodes.job
+
+	usage : sh getNodes.sh
+
+2. Run the getsimnodes.sh to get details of specific type of nodes into selNodes.txt
+	usage: sh getsimnodes.sh BSC
+
+3. Run the filterNodes.sh to filter the BSC nodes from the allNodes.job into finalNodes.job.
+	usage: sh filterNodes.sh allNodes.job selNodes.txt
+
+4 Now , run the subscriber.sh on the nodes to activate the subscription before executing AVC burst.
+	usage: sh subscriber.sh <NODES_FILE> <TIME_OUT> <LOGGING>
+5 Then , run the trigger.sh to execute the AVC burst on the nodes.
+
+6.The results are stored in finalAll.job file.
+

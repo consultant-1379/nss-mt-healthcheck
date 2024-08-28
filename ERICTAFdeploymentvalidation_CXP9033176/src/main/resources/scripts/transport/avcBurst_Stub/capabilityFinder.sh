@@ -1,0 +1,2 @@
+sh capabilityFinderWithFreq.sh
+sh capabilityFinderPerNode.sh

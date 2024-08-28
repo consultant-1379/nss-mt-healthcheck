@@ -1,0 +1,921 @@
+#ifndef CONFIGURATIONEXTENDED_IDL
+#define CONFIGURATIONEXTENDED_IDL
+
+/**
+ *
+ * (C) Copyright Ericsson AB, 2013
+ *
+ * The copyright to the computer program(s) herein is the property of Ericsson AB,
+ * Sweden. The program(s) may be used and/or copied only with the written
+ * permission from Ericsson AB or in accordance with the terms
+ * and conditions stipulated in the agreement/contract under which the program(s)
+ * have been supplied.
+ *
+ *
+ *
+ * ClearCase Version:
+ *
+ *
+ * REVISION HISTORY
+ * ----------------
+ *
+ * Created: Patrik Buhr
+ *
+ * Revised: ERA/FRL/MN Anders Carlsson, 2001-04-12
+ * Changes: Added "MIB-Sync", operation get_MIB_changes
+ *          and some new types.
+ *
+ * Revised: ERA/FRL/MN Erik Ytterfors, 2001-05-08
+ * Changes: Added "MIB-Sync", operation get_MO_attributes
+ *          and som new types.
+ *
+ * Revised: UAB/J/MN Anders Carlsson, 2001-05-30
+ * Changes: Introduced version handling by adding
+ *          get_CS_interface_version operation.
+ *
+ * Revised: Anders Carlsson, 2005-10-27
+ * Changes: Implemented WRNac50422, notification filter on
+ *          MO attribute level.
+ *
+ * Revised: Simon Peel, 2006-09-04
+ * Changes: Implemented UABtr36061, new operation get_MIB_info_ext
+ *          new struct MIBInfoExt, new type MIMRelease.
+ *
+ * Revised: Zeeshan Nabeel, 2011-05-27
+ * Changes: Implemented UABtr82981, added new Interface SessionExtended
+ *          and new method create_extended_session in ConfigurationExtended interface
+ *
+ * Revised: Dennis Granath, 2012-10-11
+ * Changes: Mib Size indication. Added new member instanceCount to MibInfoExt. 
+ *
+ * Revised: Helena Svedelius, 2012-10-12
+ * Changes: Updated due to new Notification type: AC Notification
+ *
+ * Revised: Zeeshan Nabeel, 2012-10-19
+ * Changes: Updated due to new DeltaSequenceNotification type 
+ *
+ * Revised: Mehboob Khan, 2013-02-04
+ * Changes: Updated for support to OSS
+ *
+ * Revised: Mehboob Khan, 2013-06-03
+ * Changes: Removed instanceCount from MibInfoExt for backward compatibility
+ */
+
+
+/** Some datatypes are reused from the framework specification to speed
+ *  implementation of this interface.
+ */
+
+#include <configuration_K.idl>
+
+
+module ConfigExtended
+{
+
+   /**
+    * Redefinitions
+    */
+
+   typedef BasicConfig::MIBID MIBID;
+   typedef BasicConfig::MIBName MIBName;
+   typedef BasicConfig::MIMName MIMName;
+   typedef BasicConfig::MIBRef MIBRef;
+   typedef BasicConfig::MIMVersion MIMVersion;
+   typedef BasicConfig::MOType MOType;
+   typedef BasicConfig::Filter Filter;
+   //typedef BasicConfig::Scope Scope;
+   typedef BasicConfig::OIDTYPE OIDTYPE;
+   typedef BasicConfig::NameValue NameValue;
+   typedef BasicConfig::NameValueSeq NameValueSeq;
+   typedef BasicConfig::AttributeName AttributeName;
+   typedef BasicConfig::AttributeNameSeq AttributeNameSeq;
+   typedef BasicConfig::AttributeSeq AttributeSeq;
+
+   const BasicConfig::Scope SCOPE_ALL_LEVELS = -1;
+
+   typedef CosNaming::Name DName;
+   typedef TimeBase::TimeT TimeT;
+
+
+   /**
+   * Definitions for MIM and MIB
+   */
+
+
+   typedef string MIMRelease;
+
+   struct MIBInfoExt {
+     MIBID id;
+     MIBName name;
+     MIMName type;
+     TimeT created;
+     MIMVersion version;
+     MIMRelease release;
+     DName prefix;
+   };
+
+
+
+   /**
+    * Definitions for MO
+    */
+
+   typedef string LDN;       // local distinguished name
+   typedef string PrefixType;
+   typedef string FDN;       // full distinguished name
+
+
+   /**
+    * Datatype containing MO identity, MO type, local distinguished
+    * name and the MIB prefix. To get full distinguished name,
+    * concatenate prefix with local distinguished name separated by
+    * a comma.
+    * (prefix + "," + LDN)
+    */
+   struct MOInfo
+   {
+      OIDTYPE moId;
+      MOType type;
+      LDN localDN;
+      PrefixType prefix;
+   };
+
+   typedef sequence<MOInfo> MOInfoSeq;
+
+   typedef unsigned long MOInfoIterRef;
+
+
+
+   /**
+    * Definitions for notifications
+    */
+
+
+   /**
+    *  The GenerationCount is a counter which is increased each time a
+    *  configuration notification is reported from the NE.
+    *  It is used to check if the MIB is updated during network disturbances
+    *  or during restart of the client. The counter is reported in each MIB
+    *  notification and it is not associated to a specific subscription.
+    */
+   typedef unsigned long GenerationCountType;
+
+   /** Data types used for attribute value change notifications
+    */
+
+   struct AttributeNotificationInfo
+   {
+      AttributeName name;
+      any newValue;
+   };
+
+   typedef sequence<AttributeNotificationInfo> AttributeNotificationInfoSeq;
+
+   /**
+    * The Attribute Value Change Notification holds information about changed attributes 
+    *  and their new values.
+    */
+   struct AVCNotification
+   {
+      MOInfo moInformation;
+      AttributeNotificationInfoSeq changedAttributes;
+      GenerationCountType generationCount;
+   };
+   
+   
+   /**
+    * The Attribute Value Notification holds information about which attributes have changed. 
+    */
+   struct ACNotification
+   {
+      MOInfo moInformation;
+      AttributeNameSeq names;
+      GenerationCountType generationCount;
+   };
+
+   /**
+    * enum for SequenceElementChangeType which holds information of
+    * the change type (ADD/DELETE) 
+    */
+   enum SequenceElementChangeType {ADD,
+                                   DELETE};
+ 
+   /**
+    * Struct for SequenceChangeInfo which holds information of
+    * the actual attribute value and its type (ADD/DELETE) 
+    */
+   struct SequenceChangeInfo
+   {
+      any value;
+      SequenceElementChangeType type;
+   };
+ 
+   typedef sequence<SequenceChangeInfo> ChangedElementSeq;
+ 
+  
+  /**
+   * Struct for DeltaNotificationInfo which holds information of
+   * the changed attributes and their values. 
+   */ 
+  struct DeltaNotificationInfo
+   {
+      AttributeName name;
+      ChangedElementSeq changedElements;
+   };
+ 
+   typedef sequence<DeltaNotificationInfo> DeltaNotificationInfoSeq;
+ 
+  
+   /**
+    * Struct for SequenceDelta Notification which holds 
+    * information of MO and its sequence of DeltaNotificationInfo. 
+    */
+   struct SequenceDeltaNotification
+   {
+      MOInfo moInformation;
+      DeltaNotificationInfoSeq sequenceDeltas;
+      GenerationCountType generationCount;
+   };
+
+
+
+   /** Structure for MO created/deleted notifications
+    */
+   struct TopologyNotification
+   {
+      MOInfo moInformation;
+      GenerationCountType generationCount;
+   };
+
+   /** This notification is reported when an overflow of notifications
+    *  in the producer side is detected (the notification producer
+    *  produces more notification than the subriber can handle).
+    *  When this notification is received, notifications are lost.
+    */
+   struct OverflowNotification
+   {
+      string time;
+   };
+
+   enum NotificationKind {MOCreatedType,
+                          MODeletedType,
+                          AVCType,
+                          ACType,
+			  SequenceDeltaType,
+                          OverflowType};
+
+   union ConfigNotification switch (NotificationKind)
+   {
+      case MOCreatedType : TopologyNotification createdMO;
+      case MODeletedType : TopologyNotification deletedMO;
+      case AVCType : AVCNotification updatedMO;
+      case ACType : ACNotification attributeChanged;
+      case SequenceDeltaType : SequenceDeltaNotification sequenceAttributeChanged;
+      case OverflowType : OverflowNotification overflow;
+   };
+
+   typedef sequence<ConfigNotification> ConfigNotificationSeq;
+
+
+   struct MIBChangeInfo
+   {
+      LDN localDN;
+      NotificationKind typeOfChange;
+      GenerationCountType generationCount;
+   };
+
+   typedef sequence<MIBChangeInfo> MIBChangeInfoSeq;
+
+   struct RequestedAttributes
+   {
+      FDN moName;
+      AttributeNameSeq attributes;
+   };
+
+   typedef sequence<RequestedAttributes> RequestedAttributeSeq;
+
+   struct ReturnedAttributes
+   {
+      AttributeSeq attributes;
+   };
+
+   typedef sequence<ReturnedAttributes> ReturnedAttributesSeq;
+
+
+   interface NotificationConsumer
+   {
+      void push(in ConfigNotificationSeq notifications);
+   };
+
+
+   interface NotificationProducer
+   {
+
+      typedef long SubscriptionId;
+      typedef sequence<MOType> MOTypes;
+
+      struct MOTypeAndAttributes
+      {
+         MOType typeOfMO;
+         AttributeNameSeq attributes;
+      };
+
+      typedef sequence<MOTypeAndAttributes> MOTypeAndAttributesSeq;
+
+      /** A basic filter for notifications.
+       *  Fields
+       *  ------
+       *    types: An array of strings specifying the MO types from which
+       *    notifications are wanted. If the array has zero elements, no
+       *    filtering on MO types is done.
+       *    It is only allowed for an MO type to occur once in the list. If
+       *    this rule is violated, the filtering will not work properly, since
+       *    only the first occurrence in the list will be used by the system.
+       *    There is no check whether the specified MO types really exist.
+       *
+       *    topologyEvents: Should be set to true if notifications are
+       *    wanted when MOs are created and deleted.
+       *
+       *    avcEvents: Should be set to true if notifications are
+       *    wanted for attribute value changes.
+       *
+       *    baseMO: Makes it possible to select a part of the MIB from which
+       *    notifications are wanted. If this parameter is set to the empty
+       *    string "", the root MO in the MIB will act as base MO.
+       *
+       *    scope: Specifies the number of levels below the baseMO from
+       *    which notifications are wanted. Set to SCOPE_ALL_LEVELS (-1) if
+       *    the complete subtree below the baseMO is wanted.
+       */
+      struct NotificationFilter
+      {
+         MOTypes types;
+         boolean topologyEvents;
+         boolean avcEvents;
+         FDN baseMO;
+         BasicConfig::Scope scope;
+      };
+
+      /** An extended filter for notifications.
+       *  Fields
+       *  ------
+       *    typesAndAttributes: An array of the struct MOTypeAndAttributes
+       *    which should contain all combinations of MO types and attributes
+       *    from which notifications are wanted. If the array has zero elements,
+       *    no filtering on MO types and attributes is done. If no attributes
+       *    are specified for a certain MO type, this is interpreted as all
+       *    attributes.
+       *    It is only allowed for an MO type to occur once in the list. If
+       *    this rule is violated, the filtering will not work properly, since
+       *    only the first occurrence in the list will be used by the system.
+       *    There is no check whether the specified MO types and attributes
+       *    really exist.
+       *
+       *
+       *    topologyEvents: Should be set to true if notifications are
+       *    wanted when MOs are created and deleted.
+       *
+       *    avcEvents: Should be set to true if notifications are
+       *    wanted for attribute value changes.
+       *
+       *    baseMO: Makes it possible to select a part of the MIB from which
+       *    notifications are wanted. If this parameter is set to the empty
+       *    string "", the root MO in the MIB will act as base MO.
+       *
+       *    scope: Specifies the number of levels below the baseMO from
+       *    which notifications are wanted. Set to SCOPE_ALL_LEVELS (-1) if
+       *    the complete subtree below the baseMO is wanted.
+       */
+      struct NotificationFilterExt
+      {
+         MOTypeAndAttributesSeq typesAndAttributes;
+         boolean topologyEvents;
+         boolean avcEvents;
+         FDN baseMO;
+         BasicConfig::Scope scope;
+      };
+
+
+      exception InvalidFilterConstraintsException {};
+      exception NoTransactionException {};
+      exception ToOldGenerationCount {};
+
+
+
+      /** Operation: subscribe
+       *  Documentation:
+       *      Actor invokes this operation to establish a
+       *      subscription to receive configuration events. How
+       *      the Actor discovers the System's address or reference
+       *      (so that Actor can invoke this operation) is outside
+       *      the scope of this file.
+       *
+       *      Parameters:
+       *      (in) actorReference: It carries the Actor's IOR
+       *      towards which the System pushes notifications.
+       *
+       *      (in) filter: It specifies a filter constraint which
+       *      the system will use to filter configuration events.
+       *      The system will only notify the Actor if the event
+       *      satisfies the filter constraint.
+       *
+       *      (in) timeTick: It specifies the value of a timer
+       *      held by the System for the subject actor. This
+       *      value defines a time interval within which the Actor
+       *      intends to invoke the get_subscription_status
+       *      operation. The System will reset the timer, with
+       *      timeTick when it receives the get_subscription_status
+       *      operation from the subject Actor. If the timer
+       *      expires, the System may delete its resources
+       *      allocated to the Actor and consider the Actor as if
+       *      it had invoked the unsubscribe operation. In such case,
+       *      the Actor will not receive further Notifications.
+       *      The Actor will need to invoke the subscribe
+       *      operation again.
+       *
+       *      (out) subscriptionId: It carries the System
+       *      assigned identifiers unique to each subscription.
+       */
+      void subscribe(in NotificationConsumer actorReference,
+                     in NotificationFilter filter,
+                     in long timeTick,
+                     out SubscriptionId subscriptionId)
+         raises (InvalidFilterConstraintsException);
+
+
+      /** Operation: subscribe_ext
+       *  Documentation:
+       *      See subscribe operation above. This operations does
+       *      the same thing but uses a more advanced filter.
+       *
+       *      Parameters:
+       *      (in) actorReference: It carries the Actor's IOR
+       *      towards which the System pushes notifications.
+       *
+       *      (in) filter: It specifies a filter constraint which
+       *      the System will use to filter configuration events.
+       *      The System will only notify the Actor if the event
+       *      satisfies the filter constraint.
+       *
+       *      (in) timeTick: It specifies the value of a timer
+       *      held by the System for the subject actor. This
+       *      value defines a time interval within which the Actor
+       *      intends to invoke the get_subscription_status
+       *      operation. The System will reset the timer, with
+       *      timeTick when it receives the get_subscription_status
+       *      operation from the subject Actor. If the timer
+       *      expires, the System may delete its resources
+       *      allocated to the Actor and consider the Actor as if
+       *      it had invoked the unsubscribe operation. In such case,
+       *      the Actor will not receive further Notifications.
+       *      The Actor will need to invoke the subscribe
+       *      operation again.
+       *
+       *      (out) subscriptionId: It carries the System
+       *      assigned identifiers unique to each subscription.
+       */
+      void subscribe_ext(in NotificationConsumer actorReference,
+                         in NotificationFilterExt filter,
+                         in long timeTick,
+                         out SubscriptionId subscriptionId)
+         raises (InvalidFilterConstraintsException);
+
+      /** Operation: subscribe_ext_v2
+       *  Documentation:
+       *      See subscribe_ext operation above. This operations does
+       *      the same thing but provides backward compatibility to  
+       *      older versions of OSS.  SDNs are supported only if this subscribe 
+       *      version is used.
+       *
+       *      Parameters:
+       *      (in) actorReference: It carries the Actor's IOR
+       *      towards which the System pushes notifications.
+       *
+       *      (in) filter: It specifies a filter constraint which
+       *      the System will use to filter configuration events.
+       *      The System will only notify the Actor if the event
+       *      satisfies the filter constraint.
+       *
+       *      (in) timeTick: It specifies the value of a timer
+       *      held by the System for the subject actor. This
+       *      value defines a time interval within which the Actor
+       *      intends to invoke the get_subscription_status
+       *      operation. The System will reset the timer, with
+       *      timeTick when it receives the get_subscription_status
+       *      operation from the subject Actor. If the timer
+       *      expires, the System may delete its resources
+       *      allocated to the Actor and consider the Actor as if
+       *      it had invoked the unsubscribe operation. In such case,
+       *      the Actor will not receive further Notifications.
+       *      The Actor will need to invoke the subscribe
+       *      operation again.
+       *
+       *      (out) subscriptionId: It carries the System
+       *      assigned identifiers unique to each subscription.
+       */
+      void subscribe_ext_v2(in NotificationConsumer actorReference,
+                         in NotificationFilterExt filter,
+                         in long timeTick,
+                         out SubscriptionId subscriptionId)
+         raises (InvalidFilterConstraintsException);
+
+      /** Operation: unsubscribe
+       *  Documentation:
+       *      Actor invokes this operation to cancel
+       *      subscription.  Actor must use the same subscription
+       *      Id returned by System for subscribe() and subscribe_
+       *      b() operations.  This operation is mandatory.
+       *
+       *      Parameters:
+       *      (in) subscriptionId: It carries the System assigned
+       *      identifiers unique to each subscription. A unique
+       *      subscriptionId is dependent on both the category
+       *      and the actorReference.
+       */
+      void unsubscribe(in SubscriptionId subscriptionId);
+
+
+      /** Operation: get_subscription_status
+       * Documentation:
+       *      The Actor invokes this operation to verify if the
+       *      System has lost the Actor's reference and as a
+       *      consequence, the System is not able to send
+       *      information specified under Notification
+       *      IRPNotifications to the Actor. This operation is
+       *      mandatory.
+       *
+       *      Parameters:
+       *      (in) subscriptionId: It carries the System assigned
+       *      identifiers unique to each subscription.
+       *
+       *      (return): boolean set to true if the subscription still
+       *      is active.
+       */
+      boolean get_subscription_status(in SubscriptionId subscriptionId);
+
+
+      /** Operation: get_generation_count
+       *  Documentation:
+       *      The Actor invokes this operation to verify if
+       *      any reconfigurations are missed when the actor has been
+       *      restarted or the contact to the NE has been lost.
+       *
+       *      Parameters:
+       *
+       *      (return): The latest generationCount.
+       */
+      GenerationCountType get_generation_count();
+
+
+      /** Operation: disable_notifications_for_transaction
+       *  Documentation:
+       *      The Actor invokes this operation to cancel the
+       *      subscription resulting from one transaction.
+       *
+       *      Parameters:
+       *      (in) subscriptionId: The subscription ID for the subscription
+       *      to disable notifications from.
+       *      (in) session: The session which contains the transaction
+       *      to disable notifications from.
+       */
+      void disable_notifications_for_transaction(in SubscriptionId subscriptionId,
+                                                 in BasicConfig::Session session)
+         raises (NoTransactionException);
+
+
+      /** Operation: get_MIB_changes
+       *  Documentation:
+       *      The Actor invokes this operation to retrieve modified MOs
+       *      in the MIB after the specified generationCount
+       *
+       *      Parameters:
+       *      (in) generationCount: The last generationCount from which the
+       *      subscriber received a notification. Only changes after this
+       *      generationCount will be returned.
+       *
+       *      (return): A list of all changes in the MIB since the specified
+       *      generationCount.
+       *
+       *      (exception): Thrown when the given generationCount is to old,
+       *      that is, when more than one hundred MIB changes have occurred
+       *      which is the maximum number of changes stored. In mathematical
+       *      terms: ("current generationCount" - "given generationCount" > 100)
+       */
+      MIBChangeInfoSeq get_MIB_changes(in GenerationCountType generationCount)
+         raises(ToOldGenerationCount);
+
+   };
+
+
+   interface SessionExtended : BasicConfig::Session
+   {
+
+   	/**
+       * VERSION HANDLING
+       *--------------------------------------------------
+       */
+
+      /**
+       *  This string is used as return value for get_CS_session_interface_version()
+       */
+      const string CS_SESSION_INTERFACE_VERSION_1_0 = "1c0"; // CS Session interface 1:0
+
+
+      typedef sequence <string> SessionVersionNumberSet;
+
+      /** Operation: get_CS_session_interface_version
+       *  Documentation:
+       *      Returns a list of all supported CS Session interface versions
+       *
+       *      Parameters:
+       *      (return): A list of all CS Session interface versions supported by
+       *      this implementation.
+       *
+       */
+
+      SessionVersionNumberSet get_CS_session_interface_version();
+
+
+   	long get_maximum_transaction_size()
+		raises(BasicConfig::TransactionFailure);
+
+	long get_transaction_size()
+		raises(BasicConfig::TransactionFailure);
+
+	long get_transaction_id()
+		raises(BasicConfig::TransactionFailure);
+   };
+
+
+
+   interface ConfigurationExtended : BasicConfig::BasicConfiguration
+   {
+
+      /**
+       * VERSION HANDLING
+       *--------------------------------------------------
+       */
+
+      /**
+       *  This string is used as return value for get_CS_interface_version()
+       */
+      const string CS_INTERFACE_VERSION_1_1 = "1c1"; // CS interface 1:1
+      const string CS_INTERFACE_VERSION_1_2 = "1c2"; // CS interface 1:2
+      const string CS_INTERFACE_VERSION_1_3 = "1c3"; // CS interface 1:3
+      const string CS_INTERFACE_VERSION_1_4 = "1c4"; // CS interface 1:4
+      const string CS_INTERFACE_VERSION_1_5 = "1c5"; // CS interface 1:5
+      
+      typedef sequence <string> VersionNumberSet;
+
+      /** Operation: get_CS_interface_version
+       *  Documentation:
+       *      Returns a list of all supported CS interface versions
+       *
+       *      Parameters:
+       *      (return): A list of all CS interface versions supported by
+       *      this implementation.
+       *
+       */
+      VersionNumberSet get_CS_interface_version();
+
+      /**
+       * Retrieve NotificationProducer object
+       */
+      NotificationProducer get_notification_producer();
+
+
+      /**
+       * Methods for extended session.
+       */
+
+      SessionExtended create_extended_session(in string id, in BasicConfig::SessionTimeout idlTimeout)
+	raises (BasicConfig::ProcessingFailure);
+
+      /**
+       * MIB INFO
+       *--------------------------------------------------
+       */
+
+      /** Operation: get_MIB_info_ext
+       *  Documentation:
+       *      Returns Information about the MIB
+       *
+       *      Parameters:
+       *      (in) MIBRef: The MIBRef Object
+       *           Session: A Session Object containing the current
+       *		    transaction
+       *      (return): MIBInfoExt structure containing id,name,type,timecreated,version
+       *						release&name prefix.
+       */
+
+      MIBInfoExt get_MIB_info_ext(in MIBRef mib,
+                         in BasicConfig::Session session)
+      raises (BasicConfig::UnsupportedQoS,
+              BasicConfig::NotDefined,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+
+
+      /**
+       * MIB TOPOLOGY NAVIGATION
+       *--------------------------------------------------
+       */
+
+
+      /** Operation: get_root_MO
+       *  Documentation:
+       *      Returns root MO of the MIB.
+       *
+       *      Parameters:
+       *      (in) session: A session object containing the
+       *      current transaction.
+       *      (return): The MOInfo of the root node.
+       */
+      MOInfo get_root_MO(in BasicConfig::Session session)
+         raises (BasicConfig::ProcessingFailure,
+                 BasicConfig::SecurityViolation,
+                 BasicConfig::NotDefined);
+
+
+
+      /** Operation: get_MO_parent
+       *  Documentation:
+       *      Returns MOInfo for the parent MO.
+       *
+       *      Parameters:
+       *      (in) mo: The distinguished name of the MO whose
+       *      parent MOInfo should be retrieved from.
+       *      It is possible to use either full or local
+       *      distinguished name.
+       *      (in) session: A session object containing the
+       *      current transaction.
+       *      (return): The parent's MOInfo.
+       */
+      MOInfo  get_MO_parent(in FDN mo,
+                            in BasicConfig::Session session)
+         raises (BasicConfig::NotDefined,
+                 BasicConfig::SecurityViolation,
+                 BasicConfig::ProcessingFailure);
+
+
+
+      /** Operation: get_MO_info_by_name
+       *  Documentation:
+       *      Used to retrieve MOInfo from one MO by specifying
+       *      distinguished name.
+       *
+       *      Parameters:
+       *      (in) mo: The distinguished name of the MO to retrieve
+       *      MOInfo from. It is possible to use either full or
+       *      local distinguished name.
+       *      (in) session: A session object containing the
+       *      current transaction.
+       *      (return): The MOInfo.
+       */
+      MOInfo get_MO_info_by_name(in FDN mo,
+                                 in BasicConfig::Session session)
+         raises (BasicConfig::NotDefined,
+                 BasicConfig::SecurityViolation,
+                 BasicConfig::ProcessingFailure);
+
+
+      /** Operation: get_MO_info_by_id
+       *  Documentation:
+       *      Used to retrieve MOInfo from one MO by specifying
+       *      the MO identity (number).
+       *
+       *      Parameters:
+       *      (in) mo: The identity of the MO to retrieve MOInfo
+       *      from. The identity is the same as the identity carried
+       *      in a BasicConfig::MORef.
+       *      (in) session: A session object containing the
+       *      current transaction.
+       *      (return): The MOInfo.
+       */
+      MOInfo get_MO_info_by_id(in OIDTYPE mo,
+                               in BasicConfig::Session session)
+         raises (BasicConfig::NotDefined,
+                 BasicConfig::SecurityViolation,
+                 BasicConfig::ProcessingFailure);
+
+
+
+      /** Operation: get_MO_containment
+       *  Documentation:
+       *      Used to retrieve MOInfo from several MOs by using
+       *      scope & filter.
+       *
+       *      Parameters:
+       *      (in) baseMO: The base MO in the MIB from where the
+       *      actor wants to retrieve MO information. It is possible
+       *      to use either full or local distinguished name.
+       *      (in) scope: The number of levels below the base MO
+       *      that is retrieved. Set to SCOPE_ALL_LEVELS (-1) to
+       *      get the complete subtree.
+       *      (in) filter: A constraint for selecting specific MOs.
+       *      It is the same filter as specified in BasicConfig.
+       *      (in) session: A session object containing the
+       *      current transaction.
+       *      (return): An MOInfo iterator containing all
+       *      MOInfo from the matching MOs.
+       */
+      MOInfoIterRef get_MO_containment(in FDN baseMO,
+                                       in BasicConfig::Scope scope,
+                                       in Filter filter,
+                                       in BasicConfig::Session session)
+         raises (BasicConfig::NotDefined,
+                 BasicConfig::SecurityViolation,
+                 BasicConfig::ProcessingFailure);
+
+
+
+      /** Operation: next_MO_info
+       *  Documentation:
+       *      Used to iterate through the MOInfo objects returned
+       *      by the get_MO_containment method.
+       *
+       *      Parameters:
+       *      (in) iterator: The iterator to retrieve MOInfo from.
+       *      (in) howMany: Specifies the number of MOInfo objects
+       *      that should be returned.
+       *      (in) session: A session object containing the
+       *      current transaction.
+       *      (out) mos: An array containing the MOInfo.
+       *      (return): Returns true if the iterator contains more
+       *      MOInfo objects. If the Iterator is empty, false is
+       *      returned and the iterator is deleted.
+       */
+      boolean next_MO_info(in MOInfoIterRef iterator,
+                           in unsigned long howMany,
+                           in BasicConfig::Session session,
+                           out MOInfoSeq mos)
+         raises (BasicConfig::NotDefined,
+                 BasicConfig::SecurityViolation,
+                 BasicConfig::ProcessingFailure);
+
+
+
+      /** Operation: delete_MO_info_iter
+       *  Documentation:
+       *      Deletes the iterator returned by the
+       *      get_MO_containment method.
+       *
+       *      Parameters:
+       *      (in) iterator: The iterator to delete.
+       *      (in) session: A session object containing the
+       *      current transaction.
+       *      (return): Returns true if the iterator contains more
+       *      MOInfo objects. If the Iterator is empty, false is
+       *      returned and the iterator is deleted.
+       */
+      void delete_MO_info_iter(in MOInfoIterRef iterator,
+                               in BasicConfig::Session session)
+         raises (BasicConfig::NotDefined,
+                 BasicConfig::SecurityViolation,
+                 BasicConfig::ProcessingFailure);
+
+
+
+      /** Operation: get_MO_attributes
+       *  Documentation:
+       *      Used to retrieve the attribute values for a number of MOs in
+       *      one call.
+       *
+       *      Parameters:
+       *      (in) requestedAttributes: is a sequence of a structure where each
+       *      struct contains the FDN of the adressed MO and the names of
+       *      the attributes to return.
+       *      (in) session: A session object containing the
+       *      current transaction.
+       *      (return):  The requested attributes are returned with name and
+       *      value. Index [n] corresponds to index [n] in the
+       *      requestedAttributes parameter
+       */
+      ReturnedAttributesSeq get_MO_attributes(in RequestedAttributeSeq
+                                              requestedAttributes,
+                                              in BasicConfig::Session session)
+         raises (BasicConfig::NotAccepted,
+                 BasicConfig::ProcessingFailure);
+		 
+   
+      /** Operation: get_mo_instance_count
+       *  Documentation:
+       *      The Actor invokes this operation to retrieve the count of
+       *      the number of MO instances defined in the system
+       *
+       *      Only interface 1c5 will support this operation.
+       *
+       *      Parameters:
+       *
+       *      (return): The latest MO instance count.
+       */
+      long get_mo_instance_count();
+		 
+   };
+
+};
+
+
+#endif

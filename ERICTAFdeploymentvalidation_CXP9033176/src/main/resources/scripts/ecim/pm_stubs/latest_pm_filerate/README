@@ -1,0 +1,32 @@
+#########################################################################################
+DESCRIPTION : TO FIND THE MAX NUMBER OF NODES THAT SUPPORT PM_FILERATE IN ONE VM.
+NOTE : BEFORE THE USECASE CHECK THE BANDWIDTH,LOAD BALANCE,MO COUNT,NUMBER OF CORES,NETSIM VERSION.
+
+##########################################
+# To Generate Node files-
+#       Trigger getNodes.sh where the nodes are present which will generate allNodes.job file.
+#       Trigger generate_nodes.sh <simulation name> with simulation name as input which will generate nodes.txt and node2.txt which  will be needed for xml_file_generator.sh and bin_file_generator.sh internally.
+
+USAGE-
+    1) Pre-usecase setups-
+    ### To be run in the box where the node are present.
+        -> Since the files are generated in the .show fs path, the files will have a retention period i.e., the files will get deleted.
+        -> Find the retention period and get the max number of files which can be present.
+        -> After getting the maximum number of files which can be present run the file xml_file_generator and bin_file-generator as below.
+        -> The details of file name should be present in fetcheddata.txt
+        -> Trigger the xml_file_generator.sh <simulation_name> and bin_file_generator.sh <simulation name> files.(Nodeips file should be present)(where the nodes are present)
+        -> xml_file_generator.sh will create .xml files in the fs path of the node for all the nodes present in the simulation.(Iterated through nodes files which has node names)
+        NOTE - Since the files are sym linkded make sure that there is a directory /netsim/mylink/xml_file.xml
+        -> bin_file_generator.sh will create .bin files in the same fs path mentioned above.
+        -> Trigger fetch_details.sh <simulation name> file(where the nodes are present) . output is stored in fetcheddata.txt
+        -> Copy the fetcheddata.txt to the client server where the stubs are present.
+        OR
+  ### To be run in client server:
+        If the above case is not required-
+        Trigger sh pmstub.sh <Number of nodes>
+        Nodeips.txt file should be present with node name and node ip.
+        The output will be in fetcheddata.txt
+    2) Run the usecase trigger.sh <NETSIM_SERVER> <NUMBER OF NODES>
+        fetcheddata.txt should be present in the client server where stubs are present.
+    3) The output is present in totalstats.log and results.txt
+

@@ -1,0 +1,132 @@
+/* ## Module: AlarmIRPSystem
+
+This module contains the specification of all operations of Alarm IRP Agent 
+specified in Alarm IRP: IS version 1 and Alarm IRP: CORBA SS version 1:1.
+============================================================================== */
+
+#ifndef  AlarmIRPSystem_idl
+#define  AlarmIRPSystem_idl
+
+#include "CosNotification_F.idl"
+#include "AlarmIRPConstDefs_F.idl"
+#include "CommonIRPConstDefs_F.idl"
+#pragma prefix "3gppsa5.org"
+
+module AlarmIRPSystem {
+	
+  /*
+  System fails to complete the operation.  System provides
+  reasons whose semantics is outside the scope of this IRP.
+  */
+
+  exception AcknowledgeAlarms { string reason; };
+  exception UnacknowledgeAlarms { string reason; };
+  exception GetAlarmList {	string reason; };
+  exception GetAlarmIRPVersion { string reason; };
+  exception GetAlarmCount { string reason; };
+  exception ParameterNotSupported { string parameter; };
+    //name of the unsupported parameter as defined in IDL.
+  exception InvalidParameter { string parameter; };
+    //name of the parameter as defined in IDL
+  exception OperationNotSupported {};
+  exception NextAlarmInformations { string reason; };
+
+
+    /**
+    The AlarmInformationIterator is used to iterate through a set of Alarm
+    Informations in Alarm List.  Method get_alarm_list contains it as 
+     output parameter.
+    IRPManager uses it to pace the return of Alarm Informations. IRPManager
+     cannot use it to pace when IRPAgent should retrieve Alarm Informations
+     from Alarm List.
+    */
+
+    interface AlarmInformationIterator {
+
+        /**
+        This method returns up to "how_many" Alarm Informations.
+        If 1 or more Alarm Information is returned, return TRUE.
+        Return FALSE if there is no more Alarm Information to be returned.
+        */
+
+        boolean next_alarmInformations (
+          in unsigned long how_many,
+          out AlarmIRPConstDefs::AlarmInformationSeq alarm_informations
+        )
+        raises (NextAlarmInformations,InvalidParameter);
+
+        /**
+        This method destroys the iterator.
+        */
+
+        void destroy ();
+
+    }; // end of AlarmInformationIterator
+
+
+	/*
+  This interface specifies all methods supported by System as
+	specified in 3GPP AlarmIRP: CORBA Solution Set version 1:1.
+  */
+
+	interface AlarmIRPOperations {
+
+		CommonIRPConstDefs::Signal acknowledge_alarms (
+			in AlarmIRPConstDefs::AlarmInformationIdSeq alarm_information_id_list,
+			in string ack_user_id,
+			in string ack_system_id,
+			out AlarmIRPConstDefs::AlarmInformationIdSeq
+      bad_alarm_information_id_list
+    )
+    raises (AcknowledgeAlarms,ParameterNotSupported,InvalidParameter);
+
+
+		CommonIRPConstDefs::Signal unacknowledge_alarms (
+			in AlarmIRPConstDefs::AlarmInformationIdSeq alarm_information_id_list,
+			in string ack_user_id,
+			in string ack_system_id,
+			out AlarmIRPConstDefs::AlarmInformationIdSeq
+bad_alarm_information_id_list
+    )
+    raises (UnacknowledgeAlarms, OperationNotSupported, ParameterNotSupported,
+InvalidParameter);
+
+
+
+     /*
+     This method returns Alarm Informations.
+     If flag is TRUE, all returned Alarm Informations shall be
+     in AlarmInformationSeq that contains 0,1 or more Alarm Informations.
+     Output parameter iter shall be useless.
+     If flag is FALSE, no Alarm Informations shall be in AlarmInformationSeq.
+     IRPAgent needs to use iter to retrieve them.
+     */
+		AlarmIRPConstDefs::AlarmInformationSeq get_alarm_list (
+      in string filter,
+      out boolean flag,
+      out AlarmInformationIterator iter
+    )
+    raises (GetAlarmList,ParameterNotSupported,InvalidParameter);
+
+
+		void get_alarm_count (
+			in string filter,
+			out long critical_count,
+			out long major_count,
+			out long minor_count,
+			out long warning_count,
+			out long indeterminate_count,
+			out long cleared_count
+    )
+    raises (GetAlarmCount, OperationNotSupported, ParameterNotSupported,
+InvalidParameter);
+
+
+		CommonIRPConstDefs::VersionNumberSet get_alarm_IRP_version ()
+			raises (GetAlarmIRPVersion);
+	};
+
+};
+
+#endif
+

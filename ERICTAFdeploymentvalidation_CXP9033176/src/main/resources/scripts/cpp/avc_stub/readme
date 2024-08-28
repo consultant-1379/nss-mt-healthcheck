@@ -1,0 +1,45 @@
+#AVC Burst 
+
+PRE-REQUISITE :
+Open 2 netsim servers (Suppose Server A and B).
+- In server A place avcBurst scripts folder.
+- In server B place subscription scripts(java) folder.
+
+STEPS:
+
+1) Ensure only the ipv4 nodes of all the required simulations are started in server A and then run the collector.sh script.
+    sh collector.sh <JOB_ID> <NE_COUNT> <SIM_NODE_NAME>
+This will collect all the started node's data and save in a file(JOB_ID.job).
+<NE_COUNT> -> Total number of Nodes for which you want to collect.
+(Run only once)
+
+2)Copy the <JOB_ID>.job file to server B where java(subscriber) files are present.
+
+3)In server B run subscriber.sh script.
+    - This will subscribe to all the nodes present in <JOB_ID>.job file till the specified <TIMEOUT> after that it will unsubscribe.
+    subscriber.sh <JOB_ID>.job <TIMEOUT>
+
+Now till the timeout time you can run the below steps in loop.(i.e. till the nodes are subscribed)
+#---------------------------------------------------------------------#
+
+4)sh trigger.sh <NUM_NOTIFS> <NUM_NODES> <JOB_FILE> <SAR_LOG> <FREQ> <AVC_ID>
+For running this ensure the subscriber process is running 
+This will trigger the avcburst command on all the selected nodes.
+This will generate <FILENAME>.sar file.
+
+5)Generate prmn file
+cd inst
+./bin/connect2netsim
+Select prmnresponse option and give the below command
+response_handler:log_responses({2018,6,29,6},{2018,6,29,7}).
+Change the date and time in the command with the interval of current date and time.
+This will generate prmnresponse file in inst/prmnresponse.
+Copy this file to avcBurst scripts folder.
+
+6)sh responseTime.sh <PRMN_FILENAME>
+This will give the start and end time of notifications as <t1sec> and <t2sec>
+
+7)sh calculateCPU.sh <FILENAME>.sar <t1sec> <t2sec>
+This will generate CPU Usage and save the output in finalFile.txt.
+
+#---------------------------------------------------------------------#

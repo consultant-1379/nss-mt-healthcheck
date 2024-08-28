@@ -1,0 +1,29 @@
+/*
+ * @(#) ClearCase ID: CosNotifyChannelAdmin.idl /main/2 00-09-29 10:45 eraasc #
+ * 
+ *
+ * REVISION HISTORY
+ * ----------------
+ *
+ * Revised: ERA/RL/MN Erik Ytterfors 00-09-21 
+ * Change:  Created. Stripped version of OMG
+ *          CosNotifyChannelAdmin
+ *
+ * Revised: ERA/RL/MN Anders Carlsson 00-09-29
+ * Change:  Added 
+ *
+ */
+ 
+#pragma prefix "omg.org"
+
+module CosNotifyChannelAdmin {
+	interface StructuredProxyPushSupplier {
+	}; // StructuredProxyPushSupplier
+
+   interface SequenceProxyPushSupplier {
+   }; // SequenceProxyPushConsumer
+
+   interface SequenceProxyPullSupplier {
+   }; // SequenceProxyPullSupplier
+
+}; // CosNotifyChannelAdmin

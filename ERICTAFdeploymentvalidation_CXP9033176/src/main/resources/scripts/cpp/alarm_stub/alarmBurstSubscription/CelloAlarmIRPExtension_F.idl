@@ -1,0 +1,113 @@
+#ifndef  CelloAlarmIRPExtension_idl
+#define  CelloAlarmIRPExtension_idl
+
+#include "AlarmIRPSystem_F.idl"
+#include "CelloNotificationIRPExtension_F.idl"
+//#include "notification_service_ext.idl"
+
+module CelloAlarmIRPExtension
+{
+
+  enum FilterTypeKind {FilterMember, SubscriptionMember};
+
+  union FilterType switch (FilterTypeKind)
+  {
+    case FilterMember: CelloNotificationIRPExtension::Filter filter;
+    case SubscriptionMember: NotificationIRPConstDefs::SubscriptionId subscription_id;
+  };
+
+  typedef short PerceivedSeverity;
+  typedef string SpecificProblem;
+  typedef sequence <SpecificProblem> SpecificProblemList;
+
+
+  /*
+   * Container for severity configurations.
+   *
+   */
+  struct SeverityInfo
+  {
+    PerceivedSeverity severity;
+    SpecificProblem specific_problem;
+  };
+
+  typedef sequence <SeverityInfo> SeverityInfoList;
+
+
+  exception GetAlarmListExt { string reason; };
+  exception GetAlarmCountExt { string reason; };
+  exception SetSeverity { string reason; };
+  exception GetAllModifiedSeverity { string reason; };
+  exception RemoveSeverityConfiguration { string reason; };
+
+
+  /*
+   * This interface extends the Alarm IRP with Cello specific support
+   * for alarm filtering and configuration of severity.
+   *
+   */
+  interface AlarmIRPExtension:AlarmIRPSystem::AlarmIRPOperations
+  {
+
+    const string ALARM_IRP_EXTENSION_VERSION_1_1 = "1fx1";
+
+    /*
+     * Returns alarm information based on a filter.
+     * Severity is the only filter parameter that is validated.
+     *
+     */
+    AlarmIRPConstDefs::AlarmInformationSeq get_alarm_list_ext
+	(in FilterType filter)
+      raises (GetAlarmListExt,
+              AlarmIRPSystem::InvalidParameter);
+
+
+    /*
+     * Returns the number of active alarms based on a filter.
+     * The result is divided into perceived severity.
+     * Severity is the only filter parameter that is validated.
+     *
+     */
+    void get_alarm_count_ext(in  FilterType filter,
+                             out long critical_count,
+                             out long major_count,
+                             out long minor_count,
+                             out long warning_count,
+                             out long indeterminate_count,
+                             out long cleared_count)
+      raises (GetAlarmCountExt,
+              AlarmIRPSystem::InvalidParameter);
+      
+
+    /*
+     * Re-defines the severity for a specific problem.
+     * No validation is performed for to discover not
+     * used specific problem.
+     *
+     */
+    void set_severity(in SpecificProblem specific_problem,
+                      in PerceivedSeverity severity)
+      raises (SetSeverity,
+              AlarmIRPSystem::InvalidParameter);
+
+
+    /*
+     * Returns a list containing all re-definitions of perceived severity.
+     *
+     */
+    SeverityInfoList get_all_modified_severity()
+      raises (GetAllModifiedSeverity);
+
+
+    /*
+     * Deletes a severity configuration for one or several specific problems.
+     *
+     */
+    void remove_severity_configuration(in SpecificProblemList spec_problem_list)
+      raises (RemoveSeverityConfiguration);
+      
+  };
+
+};
+
+#endif

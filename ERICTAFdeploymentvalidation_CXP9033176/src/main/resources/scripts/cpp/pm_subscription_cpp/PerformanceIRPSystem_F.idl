@@ -1,0 +1,369 @@
+/*
+ *  COPYRIGHT
+ *  ---------
+ *  Copyright (C) 2000 by
+ *  Ericsson Radio Systems AB
+ *  SWEDEN
+ *
+ *  The program may be used and/or copied only with the written
+ *  permission from Ericsson Radio System AB, or in accordance with
+ *  the terms and conditions stipulated in the agreement/contract
+ *  under which the program has been supplied.
+ *
+ *  All rights reserved.
+ *
+ *  IDENTIFICATION
+PerformanceIRPSystem.idl revision pB1- ERA/LVN/DM-00:0032 
+-----------based on Performance IRP-version 2 Information Service version       2, LME/DTF-98:2063 rev pC1::
+ *  
+    02-05-24  *
+ *
+ *  REVISION HISTORY
+ *  ----------------
+ *
+ *  Revised: ERASTWI 00-10-03 
+* Changes: -First revision.
+* Revised ERASTWI 02-05-24
+* Changes: Updated after comments from IP BSS and Utran
+*/
+
+// ***** This is a copy of the same file in the dir perf_E *****
+
+#include "PerformanceIRPConstDefs_F.idl"
+
+
+
+//## Module: PerformanceIRPSystem, PM IRP Corba Solution Set 
+//## Subsystem:  PerforIRP_1
+
+
+#ifndef PerformanceIRPSystem_F_idl
+#define PerformanceIRPSystem_F_idl
+
+
+
+// ==================================================================
+
+module PerformanceIRPSystem
+{
+
+exception DestinationNotSupportedException {}; 
+ exception FilteringNotSupportedException {}; //Filtering is not supported  for the type of measurement
+exception InvalidFilterException {}; // The filter is badly formatted
+exception InvalidGranularityPeriodException {};//Invalid granularity is not supported in the system at all
+exception GranularityNotSupportedException { }; //Granularity not supported for at least one of the attributes in any of the specified classes or objects.
+ 
+exception GranularityAndAttributeActivationException { PerformanceIRPConstDefs::ObservationClassList observation_class_list;
+}; //The combination of granularity, class, and attribute is not allowed,
+// because the attribute is already active for another granularity. 
+exception InvalidParameterException 
+    {string reason;}; //This exception shall only be thrown when there is a formal fault in the paramters that cannot be indicated with other exception messages 
+
+exception InvalidNetworkElement  
+   { PerformanceIRPConstDefs::NeList ne_list;};
+exception InvalidObservationClassException
+   {
+     PerformanceIRPConstDefs::ObservationClassList observation_class_list;
+   }; // A list of attributes and classes that has not been accepted. 
+exception InvalidTriggeringObjectException
+   {
+      PerformanceIRPConstDefs::ObservationObject observation_object;
+   }; //Faulty triggering object has been specified.
+exception InvalidObservationObjectListException 
+   {  
+      PerformanceIRPConstDefs::ObservationObjectList observation_object_list;
+   };
+exception InvalidPerformanceMonitoringTypeException {};
+exception InvalidReportingPeriodException {};
+exception InvalidScheduleException {};
+exception InvalidVersionNumberSyntaxException {};
+
+exception NoSuchIdException {}; //Invalid Monitoring ID
+exception NumberOfCountersExceededException {}; //Issued when maximum number of counters is exceeded or asked to be exceeded. 
+exception NumberOfMonitorsExceededException {}; //Issued when maximum number of monitors is exceeded or asked to be exceeded.
+exception OptionalOperationNotSupportedException {};
+exception OptionalParameterNotSupportedException 
+   {PerformanceIRPConstDefs::NotSupportedParameters notSupportedParameters;};
+exception OverloadException {}; //Issued when rejected to high load or risk for high load.
+exception ProcessingErrorException{	string reason;}; //Issued when rejected due to processing error that is not specified in any other exception
+
+
+
+   
+   typedef sequence<string> VersionNumberSeq; 
+   
+   
+  
+   //## PerformanceIRPOperations Documentation:
+   //      This interface specifies all methods supported by
+   //      System as specified in Performance  IRP
+   //      CORBA Solution Set version 3.
+   //## Category: PerformanceIRP-1
+   //## Subsystem: PerforIRP-1
+   
+   interface PerformanceIRPOperations 
+   {
+         
+      
+//## Operation: get_performance_IRP_version
+      CommonIRPConstDefs::VersionNumberSet get_performance_IRP_version ()
+		raises(ProcessingErrorException);
+   }; 
+     //Performance IRP Operations
+
+
+
+   interface PerformanceMonitoringOperations 
+   {
+
+      // Operations
+
+      //## Operation: listPerformanceMonitorings
+      //## Documentation:
+      //      Returns a list with all identities of the current
+      //      performance monitorings in the System.
+      CommonIRPConstDefs::Signal list_performance_monitorings
+      (in PerformanceIRPConstDefs::NeList ne_list, 
+       out PerformanceIRPConstDefs::PerformanceMonitoringList performance_monitoring_list)
+         raises (OptionalOperationNotSupportedException,
+                 OptionalParameterNotSupportedException,
+                  InvalidNetworkElement, InvalidParameterException);
+      
+
+      //## Operation: createPerformanceMonitoring
+      //## Documentation:
+      //      Actor requests System to create a new performance
+      //      monitoring on one or several observed object
+      //      classes or instances. The operation is allowed to be atomic or best effort depending on implementation. In case best effort is selected
+      //      and some Observationclasses or objects are not available the 
+      //      monitoring is started on the rest, and information about the partial failure is available 
+      //      in failure information. In this case the lookup operation has to be used to get detailed information about the failure. 
+      //In case the behaviour is atomic and the operation fails due to any failure in input or that load is too high, information about the fault is thrown in an exception.
+
+      //Note: Utran shall implement the atomic behavior version.
+
+      CommonIRPConstDefs::Signal create_performance_monitoring
+      (in PerformanceIRPConstDefs::ObservationClassList observation_class_list,
+       in PerformanceIRPConstDefs::ObservationObjectList observation_object_list,
+       in PerformanceIRPConstDefs::TimePeriodInSeconds granularity_period,
+       in PerformanceIRPConstDefs::Schedule schedule,
+       in PerformanceIRPConstDefs::TimePeriodInSeconds reporting_period,
+       in PerformanceIRPConstDefs::Destination destination,
+       in PerformanceIRPConstDefs::MeasurementName measurement_name,
+       in PerformanceIRPConstDefs::PerformanceMonitoringState performance_monitoring_state,
+       out PerformanceIRPConstDefs::PerformanceMonitoringId performance_monitoring_id,
+       out PerformanceIRPConstDefs::FailureInformation failure_information)
+         raises (OptionalOperationNotSupportedException, 
+                 OptionalParameterNotSupportedException, 
+                 InvalidObservationObjectListException,  
+                 InvalidObservationClassException, 
+                 InvalidGranularityPeriodException, 
+                 InvalidParameterException, 
+                 InvalidScheduleException, 
+                 InvalidReportingPeriodException, 
+                 DestinationNotSupportedException,
+                 ProcessingErrorException,    
+                 NumberOfMonitorsExceededException,
+                 NumberOfCountersExceededException,
+                 OverloadException,
+                 GranularityNotSupportedException,
+                 GranularityAndAttributeActivationException 
+                 );
+      
+      
+      
+      //## Operation: lookup_PerformanceMonitoring
+      //## Documentation:
+      //      Returns all attribute values of the monitoring
+      //      identified by the  performance_monitoring_id.
+      
+      CommonIRPConstDefs::Signal lookup_performance_monitoring
+      (in PerformanceIRPConstDefs::PerformanceMonitoringId performance_monitoring_id,
+       out PerformanceIRPConstDefs::ObservationClassList observation_class_list,
+       out PerformanceIRPConstDefs::ObservationObjectList observation_object_list,
+       out PerformanceIRPConstDefs::TimePeriodInSeconds granularity_period,
+       out PerformanceIRPConstDefs::Schedule schedule,
+       out PerformanceIRPConstDefs::TimePeriodInSeconds reporting_period,
+       out PerformanceIRPConstDefs::Destination destination,
+       out PerformanceIRPConstDefs::PerformanceMonitoringState performance_monitoring_state,
+       out PerformanceIRPConstDefs::MeasurementName measurement_name)
+         raises (OptionalOperationNotSupportedException, 
+                 NoSuchIdException, ProcessingErrorException, InvalidParameterException);
+      
+      CommonIRPConstDefs::Signal delete_performance_monitoring
+      (in PerformanceIRPConstDefs::PerformanceMonitoringId performance_monitoring_id)
+         raises (OptionalOperationNotSupportedException, 
+                 NoSuchIdException, ProcessingErrorException,
+                InvalidPerformanceMonitoringTypeException, InvalidParameterException);
+      
+ // Best effort.
+      // Return OK if all performance monitorings could be suspended.
+      // Return PartialFailure if one/several (not all) ids are incorrect. 
+      // --> Out parameter contains incorrect ids.
+      // NoSuchIdException is raised if all provided id:s are incorrect.
+
+      CommonIRPConstDefs::Signal suspend_performance_monitoring
+      (in PerformanceIRPConstDefs::PerformanceMonitoringIdList performance_monitoring_id_list,
+       out PerformanceIRPConstDefs::PerformanceMonitoringIdList bad_performance_monitoring_id_list)
+         raises (OptionalOperationNotSupportedException, ProcessingErrorException,
+ NoSuchIdException, //This exception is only thrown in the case all PerformanceMonitoringIDs does not exist 
+ InvalidParameterException);
+      
+// Best effort.
+      // Return OK if all performance monitorings could be resumed.
+      // Return PartialFailure if one/several (not all) performance monitorings could not be resumed due 
+      // to incorrect ids or overload problems.
+      // --> Out parameters contains those performance monitorings that could not be resumed.
+      // 
+      //
+     
+ CommonIRPConstDefs::Signal resume_performance_monitoring
+      (in PerformanceIRPConstDefs:: PerformanceMonitoringIdList performance_monitoring_id_list,
+      out PerformanceIRPConstDefs::PerformanceMonitoringIdList bad_performance_monitoring_list,
+      out PerformanceIRPConstDefs::PerformanceMonitoringIdList rejected_performance_monitoring_list)
+         raises 
+        (OptionalOperationNotSupportedException,
+        ProcessingErrorException, 
+        NumberOfCountersExceededException,
+        NumberOfMonitorsExceededException,
+        InvalidParameterException,
+        NoSuchIdException, //This exception is only thrown in the case all PerformanceMonitoringIDs does not exist 
+        OverloadException,  
+        GranularityAndAttributeActivationException 
+		
+);
+      
+      
+      CommonIRPConstDefs::Signal get_performance_monitoring_report
+      (in PerformanceIRPConstDefs::PerformanceMonitoringId performance_monitoring_id, 
+       out PerformanceIRPConstDefs::PerformanceMonitoringReport performance_monitoring_report )
+         raises (OptionalOperationNotSupportedException,
+                 ProcessingErrorException,
+                 NoSuchIdException, InvalidParameterException);
+      
+      
+      CommonIRPConstDefs::Signal filter_performance_monitoring_report
+       (in PerformanceIRPConstDefs:: PerformanceMonitoringIdList performance_monitoring_id_list,
+        in PerformanceIRPConstDefs::RecordingType recording_type,
+        in PerformanceIRPConstDefs::ObservationObject triggering_object,
+        in PerformanceIRPConstDefs::ObservationObjectList observation_object_list,
+        in PerformanceIRPConstDefs::Filter filter,
+        in PerformanceIRPConstDefs::TimeWindow time_window,
+        in PerformanceIRPConstDefs::SamplingRate sampling_rate,
+        out PerformanceIRPConstDefs::PerformanceMonitoringIdList bad_performance_monitoring_id_list)
+
+          raises (OptionalOperationNotSupportedException, 
+                 OptionalParameterNotSupportedException,
+                  InvalidPerformanceMonitoringTypeException,
+                 ProcessingErrorException,
+                 InvalidParameterException,
+                 InvalidObservationObjectListException,
+                 InvalidFilterException,
+                 InvalidTriggeringObjectException
+);
+      
+
+
+
+
+
+
+
+
+CommonIRPConstDefs::Signal lookup_filter_performance_monitoring_report
+       (in PerformanceIRPConstDefs::PerformanceMonitoringId performance_monitoring_id 
+,
+        out PerformanceIRPConstDefs::RecordingType recording_type,
+        out PerformanceIRPConstDefs::ObservationObject triggering_object,
+        out PerformanceIRPConstDefs::ObservationObjectList observation_object_list,
+        out PerformanceIRPConstDefs::Filter filter,
+        out PerformanceIRPConstDefs::TimeWindow time_window,
+        out PerformanceIRPConstDefs::SamplingRate sampling_rate)
+          raises (OptionalOperationNotSupportedException, 
+                 NoSuchIdException,
+                  InvalidPerformanceMonitoringTypeException,
+                  ProcessingErrorException, InvalidParameterException);
+
+
+     
+
+
+   }; 
+
+  // PerformanceMonitoringOperations
+
+
+   //## Category: PerformanceIRP-1
+   //## Subsystem: PerforIRP-1
+   
+
+
+
+   interface ThresholdOperations 
+   {
+      // Operations
+      
+      //## Operation: listThresholds
+      //## Documentation:
+      //      Returns a list with all identites of the thresholds
+      //      that currently exists in the System
+      
+      CommonIRPConstDefs::Signal list_thresholds
+      (in PerformanceIRPConstDefs::NeList ne_list,
+       out PerformanceIRPConstDefs::IdSeq threshold_list)
+      raises (OptionalOperationNotSupportedException, 
+              OptionalParameterNotSupportedException,
+              ProcessingErrorException, InvalidParameterException);
+
+
+      CommonIRPConstDefs::Signal create_threshold
+      (in string observation_class,
+       in PerformanceIRPConstDefs::InstanceList observed_object_list,
+       in PerformanceIRPConstDefs::TimePeriodInSeconds granularity_period,
+       in string threshold_attribute,
+       in PerformanceIRPConstDefs::AttrValue threshold_value,
+       in PerformanceIRPConstDefs::AttrValue hysteresis,
+       in PerformanceIRPConstDefs::Direction direction,
+       in string type,
+       in string perceived_severity,
+       in string probable_cause,
+       in string specific_problem,
+       out string threshold_data_id)
+         raises (OptionalOperationNotSupportedException, 
+                 OptionalParameterNotSupportedException,
+                 ProcessingErrorException, InvalidParameterException);
+      
+      //## Operation: lookupThreshold
+      //## Documentation:
+      //      Returns all attribute values of the threshold
+      //      identified by the threshoIdId.
+      CommonIRPConstDefs::Signal lookup_threshold
+      (in string threshold_data_id,
+       out string observed_object_class,
+       out PerformanceIRPConstDefs::InstanceList observed_object_list,
+       out PerformanceIRPConstDefs::TimePeriodInSeconds granularity_period,
+       out string threshold_attribute,
+       out PerformanceIRPConstDefs::AttrValue threshold_value,
+       out PerformanceIRPConstDefs::AttrValue hysteresis,
+       out PerformanceIRPConstDefs::Direction direction,
+       out string type,
+       out string perceived_severity,
+       out string probable_cause,
+       out string specific_problem)
+         raises (NoSuchIdException, 
+                 OptionalOperationNotSupportedException, 
+                 OptionalParameterNotSupportedException,
+                  ProcessingErrorException, InvalidParameterException);
+      
+      CommonIRPConstDefs::Signal delete_threshold(in string threshold_data_id)
+         raises (NoSuchIdException, 
+                 OptionalOperationNotSupportedException, 
+                 OptionalParameterNotSupportedException,
+                  ProcessingErrorException, InvalidParameterException);
+      
+      
+   };   // ThresholdOperations
+   
+};
+
+#endif

@@ -1,0 +1,27 @@
+
+/* ## Module: CommonIRPConstDefs 
+This module contains definitions commonly used among all IRPs such as Alarm IRP.
+================================================================================
+*/
+
+#ifndef CommonIRPConstDefs_idl
+#define CommonIRPConstDefs_idl
+#include <TimeBase.idl>	
+
+module CommonIRPConstDefs {
+
+  /* 
+  Definition imported from CosTime.  The time refers to time in Greenwich
+  Time Zone.  It also consists of a time displacement factor in the form
+  of minutes of displacement from the Greenwich Meridian.
+  */
+typedef TimeBase::UtcT IRPTime;
+
+  enum Signal {OK, Failure, PartialFailure};
+
+  typedef sequence <string> VersionNumberSet;
+
+};
+#endif 
+
+

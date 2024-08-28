@@ -1,0 +1,31 @@
+#avcBurst CPP 
+
+PRE-REQUISITE :
+Open 2 netsim servers(Suppose Server A and B).
+- In server A place avcBurst scripts folder.
+- In server B place subscription scripts folder(subscriber.sh , subscriberclient.sh).
+
+STEPS :
+
+1) Ensure only the nodes of all the required simulations are started in server A and then run the getNodes.sh script.
+- This will collect all the required data of the started nodes and store in allNodes.job file.
+sh getNodes.sh
+
+2) Copy allNodes.job file from server A to server B inside subscription scripts folder.
+
+3) Run subscribe.sh script in server B.
+- This will subscribe to all the nodes present in allNodes.job folder till the specified <TIMEOUT> after that it will unsubscribe.
+sh subscribe.sh allNodes.job <TIMEOUT> <LOGGING(0/1)>
+
+Now till the timeout time you can run the below steps in loop.
+#---------------------------------------------------------------------#
+4) In server A, run trigger.sh
+sh trigger.sh <NUM_NOTIFS> <NUM_NODES> <JOB_FILE> <SAR_LOG> <FREQ> <AVC_ID> <totalSecondsToCheck>
+Eg - sh trigger.sh 10 1 "allNodes.job" true 10 123 5
+
+This will trigger 10 notifications on 1 node with frequency 10/sec.
+
+trigger.sh script will trigger avcburst command, generate prmnresponse and sarlog files and calculate the time taken for all notifications, notifications/sec, CPU usage.
+
+#---------------------------------------------------------------------#
+

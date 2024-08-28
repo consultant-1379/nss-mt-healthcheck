@@ -1,0 +1,8 @@
+##############################################################################
+# Description:
+    This script will trigger the swupgrade/brmbackup actions parallelly as per the no.of nodes selected.
+# USAGE:
+ Syntax: ./shmmltnstub.sh -f <Function Name> -n <No. of nodes> -i <job id> -p <PROTOCOL> -s <SERVER> -r <NETSIM_SERVER>
+ Example: 1) ./shmmltnstub.sh -f siuupgrade -n 140 -i 123456 -p TLS -s 10.141.11.186 -r 10.141.11.185
+Pre-requisite: nodeips.txt - File which contains the node names and ips
+

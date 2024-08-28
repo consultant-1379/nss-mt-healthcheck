@@ -1,0 +1,532 @@
+//## Module: PerformanceDataIRPSystem
+//## Subsystem:  PerforDataIRP_1
+//##begin module.cm preserve=no
+//    %X% %Q% %Z% %W%
+//##end module.cm
+
+//##begin module.cp preserve=no
+//##end module.cp
+
+// ***** This is a copy of the same file in the dir perf_E *****
+
+
+#ifndef PerformanceDataIRPSystem_idl
+#define PerformanceDataIRPSystem_idl
+
+//##begin module.additionalIncludes preserve=no
+//##end module.additionalIncludes
+
+//##begin module.includes preserve=yes
+//##end module.includes
+
+
+// ==================================================================
+
+module PerformanceDataIRPSystem
+{
+  //##begin module.declarations preserve=no
+  #include "ConstDefsPDIRP.idl"
+  #include "CosEventChannelAdmin.idl"
+  
+exception NoSuchId {};
+   exception InvalidVersionNumberSyntax {};
+   exception AlreadySubscribed {};
+   exception FilteringNotSupported {};
+   exception OperationNotSupported {};
+//##end module.declarations
+
+typedef sequence<string> VersionNumberSeq;
+
+
+  //##begin module.additionalDeclarations preserve=yes
+  //##end module.additionalDeclarations
+
+
+  //## PerformanceDataIRPOperations Documentation:
+  //      This interface specifies all methods supported by
+  //      System as specified in Performance Data IRP
+  //      CORBA Solution Set version 1:1.
+  //## Category: PerformanceDataIRP-1
+  //## Subsystem: PerforDataIRP-1
+
+  interface PerformanceDataIRPOperations {
+    //##begin PerformanceDataIRPOperations.initialDeclarations preserve=yes
+    //##end PerformanceDataIRPOperations.initialDeclarations
+
+    // Attributes
+
+
+    // Relationships
+
+
+    // Associations
+
+
+    // Operations
+
+    //## Operation: subscribe
+    //## Documentation:
+    //       Actor requests subscription with System.  If System
+    //       returns Signal==ok, System shall invoke push()
+    //      against PushConsumer with new performance data.
+    //      In parameter PushConsumer is the IOR against which
+    //      System shall invoke push().
+
+    //      In parameter filterConstraint specifies the filter
+    //      constraint that System shall use to filter new
+    //      performance monitoring reports.  System shall notify 
+   //       Actors of a new performance monitoring report
+    //      only if the alarm satisfies the filter constraint.
+    //      A NULL string here indicates that no filter
+    //      constraint shall be applied. Usually only the
+    //      performancemonitoring id is needed as filter constraint. 
+
+    //      System throws alreadySubscribedException if System
+    //      knows the ActorReference carried by the in
+    //      parameter ActorReference and therefore, from System
+    //      perspective, the Actor is already in subscription.
+
+    //      System throws filteringOptionNotSupportedException
+    //      if System does not support this option.
+
+     ConstDefs::Signal subscribe(in CosEventComm::PushConsumer actor_reference,
+                                  in string filter_constraint)
+         raises (AlreadySubscribed, 
+                 FilteringNotSupported, 
+                 OperationNotSupported);
+
+    //## Operation: unsubscribe
+    //## Documentation:
+    //      Actor requests System to cancel subscription.  If
+    //      System returns Signal==ok, System shall delete
+    //      Actor subscription information from its knowledge.
+    //      System shall stop invoking push() against Actor.
+
+    //      System throws notSubscribedException if System does
+    //      not know the actorReference carried in input
+    //      parameter actorReference.
+ConstDefs::Signal unsubscribe(in CosEventComm::PushConsumer actor_reference)
+         raises (OperationNotSupported);
+
+
+    //## Operation: getSubscriptionStatus
+    //## Documentation:
+    //      Actor requests System to verify if System still has
+    //      the subscription information.  If System returns
+    //      Signal==ok, System confirms that the Actor is still
+    //      in subcription and that the Actor shall receive
+    //      notification carrying information specified in
+    //      Performance Data IRP-2.
+
+    //      System shall complete this request independent of
+    //      Actor's subscription status.
+ConstDefs::Signal get_subscription_status(in CosEventComm::PushConsumer actor_reference)
+         raises (OperationNotSupported);
+
+    //## Operation: setPerformanceDataIRPVersion
+    //## Documentation:
+    //      Actor requests System to support a specific
+    //      Performance
+    //      Data IRP Version.  If System returns Signal==ok,
+    //      System
+    //      then agrees that System currently is using
+    //      (supporting) the Actor's specified Alarm
+    //      IRPVersion.  Actor shall ignore the out parameter
+    //      versionList in this case.
+
+    //      If System returns Signal== failure, System
+    //      indicates that it does not support the Actor's
+    //      specified Performance Data IRP Version.  When
+    //      System returns Signal== failure, it shall also
+    //      return
+    //      a list of PerformanceDataIRPVersion that it
+    //      currently
+    //      supports via the out parameter versionList.
+
+    //      System shall complete this request independent of
+    //      Actor's subscription status.
+
+    //      System throws invalidVersionNumberSyntaxException
+    //      if in parameter versionNumber does not conform to
+    //      "x:y" syntax where x and y are numeric string.
+    //      Note that "x" and "y" represent the version numbers
+    //      of the Performance Data IRP:Analysis Model document
+    //      version and CORBA Solution Set document version
+    //      respectively.
+ConstDefs::Signal set_performancedata_IRP_version(in string version_number, 
+                                                        out VersionNumberSeq version_numbers)
+         raises (InvalidVersionNumberSyntax, OperationNotSupported);
+
+
+
+    //##begin PerformanceDataIRPOperations.additionalDeclarations preserve=yes
+    //##end PerformanceDataIRPOperations.additionalDeclarations
+
+  };
+
+  //## Category: PerformanceDataIRP-1
+  //## Subsystem: PerforDataIRP-1
+
+enum Direction
+   {
+      RISING, 
+      FALLING
+   };
+  //## Category: PerformanceDataIRP-1
+  //## Subsystem: PerforDataIRP-1
+
+typedef sequence<string> AttributeList;
+
+
+  //## Category: PerformanceDataIRP-1
+  //## Subsystem: PerforDataIRP-1
+
+  struct ObservationClass {
+    //##begin ObservationClass.initialDeclarations preserve=yes
+    //##end ObservationClass.initialDeclarations
+
+    // Attributes
+
+string object_class_name;
+      AttributeList class_attribute_list;
+   };
+    // Relationships
+
+
+    // Associations
+
+
+
+    //##begin ObservationClass.additionalDeclarations preserve=yes
+    //##end ObservationClass.additionalDeclarations
+
+  };
+//## Category: PerformanceDataIRP-1
+  //## Subsystem: PerforDataIRP-1
+//  This event is used for transfer of 
+struct PerformanceMonitoringEvent {
+  string                performance_monitoring_id;
+  long                sequenceNumber;       
+  TimePeriodType        scan_initiation_time;
+  GranularityPeriod   granularity_period;
+ObservationClassList	observation_class_list
+ ObservationObjectList  observation_object_list;
+ sequence<double>    observed_value;
+  sequence TimePeriodType time;
+
+  };
+
+  //## Category: PerformanceDataIRP-1
+  //## Subsystem: PerforDataIRP-1
+
+  typedef sequence<ObservationClass> ObservationClassList;
+
+
+  //## TimePeriodType Documentation:
+  //      Holds a time period in the form hh:mm:ss.
+  //## Category: PerformanceDataIRP-1
+  //## Subsystem: PerforDataIRP-1
+
+  typedef string TimePeriodType;
+
+
+  //## Category: PerformanceDataIRP-1
+  //## Subsystem: PerforDataIRP-1
+
+enum AttrType
+   {
+      INTEGER_ATTR,
+      REAL_ATTR
+   };
+
+  //## Category: PerformanceDataIRP-1
+  //## Subsystem: PerforDataIRP-1
+
+  union AttrValue switch(AttrType) {
+    //##begin AttrValue.initialDeclarations preserve=yes
+    //##end AttrValue.initialDeclarations
+
+union AttrValue switch(AttrType)
+   {
+      case INTEGER_ATTR: long i_attribute;
+      case REAL_ATTR: double r_attribute;
+   };
+
+    //##begin AttrValue.additionalDeclarations preserve=yes
+    //##end AttrValue.additionalDeclarations
+
+  };
+
+  //## Category: PerformanceDataIRP-1
+  //## Subsystem: PerforDataIRP-1
+
+  typedef string Time;
+
+
+  //## Category: PerformanceDataIRP-1
+  //## Subsystem: PerforDataIRP-1
+
+  typedef sequence<short,7> DayInterval;
+
+
+  //## Category: PerformanceDataIRP-1
+  //## Subsystem: PerforDataIRP-1
+
+  typedef sequence<string> IdSeq;
+
+
+  //## Category: PerformanceDataIRP-1
+  //## Subsystem: PerforDataIRP-1
+
+  typedef sequence<TimePeriodType,2> TimePeriodPair;
+
+
+  //## Category: PerformanceDataIRP-1
+  //## Subsystem: PerforDataIRP-1
+
+  typedef sequence<TimePeriodPair> HourInterval;
+
+
+  //## Category: PerformanceDataIRP-1
+  //## Subsystem: PerforDataIRP-1
+
+  struct Schedule {
+    //##begin Schedule.initialDeclarations preserve=yes
+    //##end Schedule.initialDeclarations
+
+    // Attributes
+
+Time start_time;
+      Time end_time;
+      HourInterval daily_interval;
+      DayInterval weekly_interval;
+
+    // Relationships
+
+
+    // Associations
+
+
+
+    //##begin Schedule.additionalDeclarations preserve=yes
+    //##end Schedule.additionalDeclarations
+
+  };
+
+  //## InstanceList Documentation:
+  //      A list of observed object instances
+  //## Category: PerformanceDataIRP-1
+  //## Subsystem: PerforDataIRP-1
+
+  typedef sequence<string> InstanceList;
+typedef string UserLabel;
+
+enum ScannerState
+   {
+      ACTIVE,
+      SUSPENDED
+   };
+
+
+enum FailureInformation
+   {
+      OBJECT_NOT_EXIST,
+      OBJECTCLASS_NOT_EXIST
+   };
+
+
+
+
+  //## Category: PerformanceDataIRP-1
+  //## Subsystem: PerforDataIRP-1
+
+  struct ObservationObject {
+    //##begin ObservationObject.initialDeclarations preserve=yes
+    //##end ObservationObject.initialDeclarations
+
+    // Attributes
+
+      InstanceList instance_list;
+      AttributeList instance_attribute_list;
+
+    // Relationships
+
+
+    // Associations
+
+
+
+    //##begin ObservationId.additionalDeclarations preserve=yes
+    //##end ObservationId.additionalDeclarations
+
+  };
+
+struct PerformanceMonitoring
+   {
+      string scanner_id;
+      UserLabel user_label;
+      ScannerState state;
+   };
+
+   typedef sequence<PerformanceMonitoring> PerformanceMonitoringList;
+
+
+  //## Category: PerformanceDataIRP-1
+  //## Subsystem: PerforDataIRP-1
+
+typedef sequence<ObservationObject> ObservationObjectList;
+
+
+  //## Category: PerformanceDataIRP-1
+  //## Subsystem: PerforDataIRP-1
+
+  interface PerformanceMonitoringOperations {
+    //##begin PerformanceMonitoringOperations.initialDeclarations preserve=yes
+    //##end PerformanceMonitoringOperations.initialDeclarations
+
+    // Attributes
+
+
+    // Relationships
+
+
+    // Associations
+
+
+    // Operations
+
+    //## Operation: listPerformanceMonitorings
+    //## Documentation:
+    //      Returns a list with all identities of the current
+    //      performance monitorings in the System.
+list_performance_monitorings(out PerformanceMonitoringList performance_monitoring_list) raises (OperationNotSuppported);
+      
+
+    //## Operation: createPerformanceMonitoring
+    //## Documentation:
+    //      Actor requests System to create a new performance
+    //      monitoring on one or several observed object
+    //      classes or instances. The operation is best effort. In case some some Observationclasses or objets are not available the monitoring is started on the rest, and information is available in failure information .
+    
+ConstDefs::Signal create_performance_monitoring(in ObservationClassList observation_class_list,
+                                                      in ObservationObjectList observation_object_list,
+                                                      in TimePeriodType granularity_period,
+                                                      in Schedule schedule,
+                                                      in TimePeriodType reporting_period,
+                                                      in short destination,
+                                                      in UserLabel user_label,
+                                                      out string performance_monitoring_id)
+                                                     out FailureInformation failure_information
+         raises (OperationNotSupported),;
+      
+      
+
+    //## Operation: lookup_PerformanceMonitoring
+    //## Documentation:
+    //      Returns all attribute values of the monitoring
+    //      identified by the  performance_monitoring_id.
+
+ConstDefs::Signal lookup_performance_monitoring(in string performance_monitoring_id,
+                                                      out ObservationClassList observation_class_list,
+                                                      out ObservationObjectList observation_object_list,
+                                                      out TimePeriodType granularity_period,
+                                                      out Schedule schedule,
+                                                      out TimePeriodType reporting_period,
+                                                      out short destination,
+                                                      out ScannerState state,
+                                                      out UserLabel user_label)
+         raises (OperationNotSupported, NoSuchId);
+
+ ConstDefs::Signal delete_performance_monitoring(in string performance_monitoring_id)
+         raises (OperationNotSupported, NoSuchId);
+
+
+ConstDefs::Signal suspend_performance_monitoring(in string performance_monitoring_id)
+         raises (OperationNotSupported, NoSuchId);
+ConstDefs::Signal resume_performance_monitoring(in string performance_monitoring_id)
+         raises (OperationNotSupported, NoSuchId);
+
+
+ConstDefs::Signal get_performance_monitoring_report(in string performance_monitoring_id)
+         raises (OperationNotSupported);
+   };
+
+
+    //##begin ScannerOperations.additionalDeclarations preserve=yes
+    //##end ScannerOperations.additionalDeclarations
+
+  };
+
+  //## Category: PerformanceDataIRP-1
+  //## Subsystem: PerforDataIRP-1
+
+  interface ThresholdOperations {
+    //##begin ThresholdOperations.initialDeclarations preserve=yes
+    //##end ThresholdOperations.initialDeclarations
+
+    // Attributes
+
+
+    // Relationships
+
+
+    // Associations
+
+
+    // Operations
+
+    //## Operation: listThresholds
+    //## Documentation:
+    //      Returns a list with all identites of the thresholds
+    //      that currently exists in the System
+interface ThresholdOperations
+   {
+      ConstDefs::Signal list_thresholds(out IdSeq threshold_list)
+         raises (OperationNotSupported);
+
+ConstDefs::Signal create_threshold(in string observation_class,
+                                        in InstanceList observed_object_list,
+                                        in TimePeriodType granularity_period,
+                                        in string threshold_attribute,
+                                        in AttrValue threshold_value,
+                                        in AttrValue hysteresis,
+                                        in Direction direction,
+                                        in string type,
+                                        in string perceived_severity,
+                                        in string probable_cause,
+                                        in string specific_problem,
+                                        out string threshold_data_id)
+         raises (OperationNotSupported);
+
+    //## Operation: lookupThreshold
+    //## Documentation:
+    //      Returns all attribute values of the threshold
+    //      identified by the threshoIdId.
+ConstDefs::Signal lookup_threshold(in string threshold_data_id,
+                                         out string observed_object_class,
+                                         out InstanceList observed_object_list,
+                                         out TimePeriodType granularity_period,
+                                         out string threshold_attribute,
+                                         out AttrValue threshold_value,
+                                         out AttrValue hysteresis,
+                                         out Direction direction,
+                                         out string type,
+                                         out string perceived_severity,
+                                         out string probable_cause,
+                                         out string specific_problem)
+
+         raises (NoSuchId, OperationNotSupported);
+
+ConstDefs::Signal delete_threshold(in string threshold_data_id)
+         raises (NoSuchId, OperationNotSupported);
+
+
+
+    //##begin ThresholdOperations.additionalDeclarations preserve=yes
+    //##end ThresholdOperations.additionalDeclarations
+
+  };
+
+};
+
+#endif

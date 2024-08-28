@@ -1,0 +1,208 @@
+erbs_pm_subscribe_observation_class_list
+Index : 84
+Start : 103 End : 116
+Class : EUtranCellFDD
+Index : 39491
+Start : 39510 End : 39523
+Class : DlPrbCapacity
+Index : 39596
+Start : 39615 End : 39630
+Class : Synchronization
+Index : 39839
+Start : 39858 End : 39862
+Class : Sctp
+Index : 40512
+Start : 40531 End : 40546
+Class : SctpAssociation
+Index : 41018
+Start : 41037 End : 41057
+Class : MpProcessingResource
+Index : 41267
+Start : 41286 End : 41305
+Class : EthernetOamLocalMep
+Index : 41502
+Start : 41521 End : 41536
+Class : PeerIpSecTunnel
+Index : 41656
+Start : 41675 End : 41687
+Class : EthernetLink
+Index : 41877
+Start : 41896 End : 41907
+Class : MceFunction
+Index : 42314
+Start : 42333 End : 42348
+Class : GigaBitEthernet
+Index : 43186
+Start : 43205 End : 43218
+Class : MeasCellGroup
+Index : 43309
+Start : 43328 End : 43348
+Class : ExternalUtranCellFDD
+Index : 43570
+Start : 43589 End : 43605
+Class : MediumAccessUnit
+Index : 43698
+Start : 43717 End : 43733
+Class : AdmissionControl
+Index : 43794
+Start : 43813 End : 43838
+Class : Cdma20001xRttCellRelation
+Index : 44035
+Start : 44054 End : 44065
+Class : PowerSupply
+Index : 44150
+Start : 44169 End : 44178
+Class : NbIotCell
+Index : 48290
+Start : 48309 End : 48320
+Class : DnsResolver
+Index : 48456
+Start : 48475 End : 48493
+Class : EUtranFreqRelation
+Index : 48736
+Start : 48755 End : 48772
+Class : EnergyMeasurement
+Index : 48932
+Start : 48951 End : 48957
+Class : RiPort
+Index : 49116
+Start : 49135 End : 49157
+Class : PmUlInterferenceReport
+Index : 52819
+Start : 52838 End : 52848
+Class : GpsSyncRef
+Index : 52891
+Start : 52910 End : 52920
+Class : PlugInUnit
+Index : 53043
+Start : 53062 End : 53078
+Class : SecurityHandling
+Index : 53182
+Start : 53201 End : 53214
+Class : EUtranCellTDD
+Index : 92878
+Start : 92897 End : 92903
+Class : RfPort
+Index : 93234
+Start : 93253 End : 93270
+Class : GeranCellRelation
+Index : 93451
+Start : 93470 End : 93479
+Class : DscpGroup
+Index : 93608
+Start : 93627 End : 93631
+Class : Icmp
+Index : 94376
+Start : 94395 End : 94409
+Class : ConsumedEnergy
+Index : 94514
+Start : 94533 End : 94546
+Class : BatteryBackup
+Index : 94715
+Start : 94734 End : 94751
+Class : PacketTimeSyncRef
+Index : 95444
+Start : 95463 End : 95480
+Class : UtranFreqRelation
+Index : 95586
+Start : 95605 End : 95607
+Class : Ip
+Index : 95810
+Start : 95829 End : 95846
+Class : ExternalGeranCell
+Index : 96066
+Start : 96085 End : 96107
+Class : ExternalENodeBFunction
+Index : 96340
+Start : 96359 End : 96370
+Class : EnergyMeter
+Index : 96487
+Start : 96506 End : 96520
+Class : TwampResponder
+Index : 96648
+Start : 96667 End : 96681
+Class : TermPointToLbm
+Index : 96820
+Start : 96839 End : 96852
+Class : SectorCarrier
+Index : 97457
+Start : 97476 End : 97487
+Class : IpInterface
+Index : 98128
+Start : 98147 End : 98165
+Class : UlBasebandCapacity
+Index : 98235
+Start : 98254 End : 98279
+Class : ConsumedEnergyMeasurement
+Index : 98396
+Start : 98415 End : 98426
+Class : MbmsService
+Index : 99037
+Start : 99056 End : 99063
+Class : IkePeer
+Index : 99393
+Start : 99412 End : 99425
+Class : UlPrbCapacity
+Index : 99498
+Start : 99517 End : 99539
+Class : TrafficManagementQueue
+Index : 99660
+Start : 99679 End : 99689
+Class : IpHostLink
+Index : 99879
+Start : 99898 End : 99910
+Class : VpnInterface
+Index : 99978
+Start : 99997 End : 100017
+Class : BbProcessingResource
+Index : 101538
+Start : 101557 End : 101563
+Class : RiLink
+Index : 101672
+Start : 101691 End : 101709
+Class : EUtranCellRelation
+Index : 103446
+Start : 103465 End : 103479
+Class : IpAccessHostEt
+Index : 104258
+Start : 104277 End : 104300
+Class : PimCancellationFunction
+Index : 104452
+Start : 104471 End : 104478
+Class : Climate
+Index : 104645
+Start : 104664 End : 104678
+Class : ENodeBFunction
+Index : 105389
+Start : 105408 End : 105421
+Class : Ipv6Interface
+Index : 105943
+Start : 105962 End : 105977
+Class : PmUeMeasControl
+Index : 106324
+Start : 106343 End : 106361
+Class : DlBasebandCapacity
+Index : 106431
+Start : 106450 End : 106467
+Class : UtranCellRelation
+Index : 107206
+Start : 107225 End : 107236
+Class : IpSecTunnel
+Index : 107418
+Start : 107437 End : 107459
+Class : CapacityConnectedUsers
+Index : 107726
+Start : 107745 End : 107752
+Class : GtpPath
+Index : 107950
+Start : 107969 End : 107982
+Class : IpFlowMonitor
+Index : 108186
+Start : 108205 End : 108218
+Class : ProcessorLoad
+Index : 108293
+Start : 108312 End : 108329
+Class : PowerDistribution
+Index : 108380
+Start : 108399 End : 108414
+Class : EranInterMeLink

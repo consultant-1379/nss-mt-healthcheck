@@ -1,0 +1,19 @@
+####################################################
+
+DESCRIPTION : THIS IS TO DO THE SHM UPGRADE ACTIVITY FOR BSC NODES
+
+USAGE : sh trigger.sh <num_of_nodes>
+
+####################################################
+
+This script will execute the mml and netconf commands by connecting to the node.
+
+Pre Use-case Set up-
+    1) The node details that is node name and node ip should be kept in a file called nodeips.txt like <nodename> <nodeip>
+
+USECASE-
+    The usecase should be triggered from the client server.
+    sh trigger.sh <num_of_nodes>
+    nodeips.txt file should be present in the client server.
+
+####################################################

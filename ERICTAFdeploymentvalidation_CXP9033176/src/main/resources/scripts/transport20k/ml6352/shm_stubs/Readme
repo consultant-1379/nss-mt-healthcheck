@@ -1,0 +1,14 @@
+Nodes VM:
+
+1. Run getNodes.sh to get the nodes details stored in nodeips.txt .
+2. Copy this to stubs vm.
+
+Stubs VM:
+
+1. Run shmmltnoutdoorstub.sh script  by giving function name swupgrade for Software upgrade and brmbackup for Backup .
+Note: You should change the IP address in the upgrade.sh and backup.sh scripts(wherever it needed) to the current stubs VM IP.
+
+
+2. The package(.zip) should be saved in /var/tmp as well.
+
+

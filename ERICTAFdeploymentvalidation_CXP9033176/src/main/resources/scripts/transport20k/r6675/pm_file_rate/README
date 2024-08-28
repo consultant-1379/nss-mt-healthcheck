@@ -1,0 +1,42 @@
+#########################################################################################
+DESCRIPTION : TO FIND THE MAX NUMBER OF NODES THAT SUPPORT PM_FILERATE IN ONE VM.
+NOTE : BEFORE THE USECASE CHECK THE BANDWIDTH,LOAD BALANCE,MO COUNT,NUMBER OF CORES,NETSIM VERSION.
+
+##########################################
+
+   USAGE-
+      ################  In target VM(nodes VM) #########################
+
+    step 1)   Trigger all_getNodes.sh(or getNodes.sh if needed)  which will generate allNodes.job file.
+
+    step 2)   Trigger generate_nodes.sh <simulation name>  with simulation name as input which will generate nodes.txt and nodeips.txt which  will be needed for xml_file_generator.sh and bin_file_generator.sh internally.
+
+
+            ->  Since the files are generated in the .show fs path, the files will have a retention period i.e., the time frequency for the files to get deleted.
+            -> Find the retention period and get the max number of files which can be present.
+            -> After knowing the maximum number of files which can be present, change the loop count values in both files xml_file_generator.sh and bin_file-generator.sh.( For dg2 : max xml files at a time is 100 and bin files 14 (generally,7 each for 2 diff size bin files , 256KB and 4.7 MB))
+            -> Create a directory named  mylink in the /netsim directory and put an xml file in this directory by copying from fs/c/pm_data path of any node.
+
+     step 3)  Trigger the xml_file_generator.sh <simulation_name> and bin_file_generator.sh <simulation name> files.(nodeips.txt file should be present).
+             -> Note: first run xml_file_generator.sh and then bin_file_generator.sh .
+             -> xml_file_generator.sh will create .xml files with specified count in a new directory in fs/c/pm_data path for every node present in the simulation.(Iterated through nodes.txt which has node names)
+             -> Note: Since the files are sym linked ,make sure that there is a directory /netsim/mylink/xml_file.xml
+             -> This xml_file name may be hard-coded in the xml_file_generator.sh in respective line.
+             -> bin_file_generator.sh will create .bin files in the same path mentioned above.
+             -> Before running these scripts , check whether the specified file paths in both scripts are correct or not.
+
+     step 4)   Trigger fetch_details.sh <simulation name> file. output is stored in finalfetch.txt in /netsim directory.
+
+             -> this will store details as  <node name> <node ip> <bin file name to be downloaded>  .
+             -> Note: If you need two simulations, follow from step 2 using this second simulation . this data also appends to FinalFetch.txt
+	     -> Remove IPv6 nodes details from FinalFetch.txt if not required and rename it as fetcheddata.txt .
+             -> Copy the fetcheddata.txt to other server where the stubs are present.
+
+
+    ################### In stubs VM ####################################
+
+    step 5) Run the usecase trigger.sh <NETSIM_SERVER> <NUMBER OF NODES>
+
+             -> fetcheddata.txt should be present in this path.
+             -> The usecase statistics will be present in totalstats.log and results.txt
+

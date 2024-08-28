@@ -1,0 +1,107 @@
+#!/bin/bash
+#===================================================================================
+#
+# FILE: collector.sh
+#
+# USAGE: sh collector.sh <NE_COUNT>
+#
+# DESCRIPTION: Generates a file containing details of NEs present in the current server.
+#              Output File will be <JOB_ID>.job
+#              which has to be fed into trigger.sh to trigger fullsync on given number
+# 	       of nodes
+#
+# NOTES: ---
+# AUTHOR: ZPALSRI(srihari.palivela@tcs.com)
+# VERSION: 1.0
+# CREATED: 15.03.2018 
+#
+#===================================================================================
+
+# Validate Commandline Args
+if [[ $# -ne 1 ]];then
+	echo "Invalid Parameters"
+	echo "Usage : sh $0 <NUM_NODES>"
+	exit 1
+fi
+
+
+NE_COUNT=$1
+
+ALL_SIMS="allsims.txt"
+SIM_FILE="simfile.txt"
+TMP_FILE="tmp.txt"
+
+#----------------------------------------------------------------------
+# Precheck for files
+#----------------------------------------------------------------------
+
+rm -rf nodeips.txt
+#----------------------------------------------------------------------
+# Fetch all simulations and loop over each simulation to fetch 
+# details of each NE
+#----------------------------------------------------------------------
+
+# Fetch all sims
+COUNT=0
+echo -e ".show simulations\n"|~/inst/netsim_shell >  $ALL_SIMS 
+cat $ALL_SIMS
+# Loop over each simulation 
+while  read -r SIM && [[ $COUNT -lt $NE_COUNT ]] ;
+do
+    if [[ $SIM == *"default"* ]];then
+        continue
+    elif [[ $SIM == *">>"* ]];then
+	continue
+    else
+        
+	#Get all NEs of simulation
+	echo "per simulation :"$SIM
+        echo "" > $TMP_FILE
+	echo "" > $SIM_FILE
+	echo ".open" $SIM >> $TMP_FILE
+        echo ".show simnes" >> $TMP_FILE
+        ~/inst/netsim_shell < $TMP_FILE > $SIM_FILE
+	
+	# Loop over Each NE and extract details
+        while read -r LINE && [[ $COUNT -lt $NE_COUNT ]]; do
+            if [[ $LINE == *"NE Name"* ]];then
+                continue
+            elif [[ $LINE == *">>"* ]];then
+                continue
+            elif [[ $LINE == *"OK"* ]];then
+                continue
+            elif [[ $LINE == *"O&M"* ]];then
+                continue
+            elif [[ $LINE == *"Error"* ]];then
+                continue
+            else
+                NE=$(echo $LINE | awk '{print $1}')
+                NEIP=$(echo $LINE | awk '{print $6}')
+                
+		# Check if node is IPV4 
+		# As openssl for IPV6 didn't worked (Can be removed if found working)
+		#if ! [[ $NEIP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]];then
+                 #   continue
+                #fi
+
+		# Check if node is TLS enabled
+                echo $LINE | grep TLS > /dev/null
+                TLS=$?
+                    if [[ $LINE = *[!\ ]* ]]; then
+                        echo $NE $NEIP $SIM >> "nodeips.txt"
+                        COUNT=`expr $COUNT + 1`
+                    fi
+            fi
+        done < "$SIM_FILE"
+    fi
+done < "$ALL_SIMS"
+
+#----------------------------------------------------------------------
+# Intermediate Files Cleanup
+#----------------------------------------------------------------------
+rm -rf $ALL_SIMS
+rm -rf $SIM_FILE
+rm -rf $TMP_FILE
+
+
+

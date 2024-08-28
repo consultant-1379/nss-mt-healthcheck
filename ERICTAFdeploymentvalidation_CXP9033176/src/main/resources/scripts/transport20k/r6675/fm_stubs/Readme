@@ -1,0 +1,6 @@
+Stubs should be executed on the nodes vm.
+
+1. Run getNodes.sh to get the nodes details in file allNodes.job
+2. Run alarmBurst_executor.sh to trigger alarm burst on nodes.
+3. results will be stored in finalFile.job
+

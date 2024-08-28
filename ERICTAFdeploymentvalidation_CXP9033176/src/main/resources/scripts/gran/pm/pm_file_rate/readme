@@ -1,0 +1,42 @@
+
+####################
+
+USAGE:-
+    sh extract_details.sh <num_nodes> <num_files_of_each_type>
+    sh trigger.sh <num_nodes>
+DESCRIPTION:
+    PM_FILERATE FOR BSC(GRAN)
+    BSC NODES GENERATES 7 TYPES OF FILES:-
+    1)CDHDEFAULT
+    2)OSSBAR
+    3)OSSMRR
+    4)OSSMTR
+    5)OSSCER
+    6)OSSCTR
+    7)OSSRIR
+
+    THE TOTAL SIZE OF ALL THESE ABOVE FILES COMBINED IS 13. MB
+
+    THE PATH FOR CDHDEFAULT IS apfs/detinations/CDHDEFAULT/
+        IN THE ABOVE PATH IN EVERY PARTICULAR INTERVAL OF TIME NEW DIRECTORIES ARE GENERATED WHICH HAS THE FILE TO BE FETCHED
+
+    FOR OTHER TYPES OF FILES , THERE IS NO DIRECTORY CREATED
+        apfs/destinations/OSSBAR
+                         /OSSMTR
+                         .....
+    
+####################
+PRE-USECASE SETUP
+
+1) RUN THE extract_details script with inputs as number of nodes and number of files it should fetch of each type.
+    For example- sh extract_details.sh 1 10
+        --> This will collect the paths of 7 types of files and collect 10 files from each type i.e., total 70 files
+
+2) extract_file.sh will fetch the .show fs path of the nodes and store it in variables
+3) getfilename.sh will fetch the file names of the respective .show fs paths 
+
+###################
+1) sh trigger.sh <Number of nodes> should be triggered.
+
+####################
+THE FINAL OUTPUT AND RESULTS ARE STORED IN r.txt and results.txt 

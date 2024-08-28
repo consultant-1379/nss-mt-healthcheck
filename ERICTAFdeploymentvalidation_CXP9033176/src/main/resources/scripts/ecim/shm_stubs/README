@@ -1,0 +1,47 @@
+Project: Stub for SHM actions on DG2 nodes
+
+Syntax:
+./shmstub.sh -f <FUNCTION NAME> -n <NUM_OF_NODES> -i <JOB_ID> -s <FTPSERVER> -p <PROTOCOL>
+
+Possible Function names: swupgrade, swclean, brmbackup and cleanbackup
+
+Note:
+
+1)Unique jobid can be created as below
+jobid=`date +%s`
+
+2)The software package has to be extracted in the FTP server before triggering the upgrade.
+Corresponding package details has to be updated in the conf.txt file.
+
+3)Generate the nodeips.txt file by running the script on the NETSim server where the nodes
+are present. Copy the nodeips.txt file to the server where SHM stubs to be executed.
+
+4)Run the shm_presetup script on the nodes before executing the stubs
+
+5)Script has to be executed to any other server where the nodes are reachable for ssh/ssl
+
+Examples:
+
+BACKUP:
+
+The below command will create the backup, export to the FTP server, delete the backup after export
+
+./shmstub.sh -f brmbackup -n 10 -i $jobid -s 10.141.11.186 -p TLS
+
+CLEAN BACKUP:
+
+The below command will remove the exported backup files in the FTP server
+
+./shmstub.sh -f cleanbackup -n 10 -i $jobid -s 10.141.11.186 -p TLS
+
+SOFTWARE UPGRADE:
+
+The below command will upgrade the package on the node
+
+./shmstub.sh -f swupgrade -n 10 -i $jobid -s 10.141.11.186 -p TLS
+
+CLEAN SOFTWARE UPGRADE:
+
+The below command will remove the software upgrade MOs created in the above step
+
+./shmstub.sh -f swclean -n 10 -i $jobid -s 10.141.11.186 -p TLS

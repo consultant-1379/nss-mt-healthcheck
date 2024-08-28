@@ -1,0 +1,100 @@
+
+#ifndef  CelloNotificationIRPExtension_idl
+#define  CelloNotificationIRPExtension_idl
+
+#include "NotificationIRPSystem_F.idl"
+
+
+module CelloNotificationIRPExtension
+{
+  
+  typedef short PerceivedSeverity;
+  typedef string SpecificProblem;
+  typedef sequence <SpecificProblem> SpecificProblemList;
+  
+
+
+  struct SpecificProblemMOPair
+  {
+    SpecificProblem specific_problem;
+    string mo_name; // Both FDN and LDN can be used
+  };
+  
+  typedef sequence <SpecificProblemMOPair> SpecificProblemMOPairList;
+  
+
+   /*
+    * Filter constraint used for filtering on alarms. Alarms that satisfy the
+    * filter constraint will not be returned. If severity is used, this means
+    * that alarms with the specified severity or LOWER will not be return.
+    * For example, if severity is set to minor, alarms with severity minor,
+    * or warning or indeterminate, will not be returned.
+    * To construct an "empty" filter, use the values as described below.
+    */
+  struct Filter
+  {
+    PerceivedSeverity severity;                          // set zero if not used.
+    SpecificProblemList spec_problem_list;               // set to zero length if not used.
+    SpecificProblemMOPairList spec_problem_mo_pair_list; // set to zero length if not used.
+  };
+  
+  
+  exception AttachPushExt { string reason; };
+  exception GetSubscriptionStatusExt { string reason; };
+  exception ChangeSubscriptionFilterExt { string reason; };
+  
+
+  /*
+   * This interface extends the Notification IRP with Cello 
+   * specific support for filters on subscriptions.
+   *
+   */
+  interface NotificationIRPExtension:NotificationIRPSystem::NotificationIRPOperations
+  {
+
+     const string NOTIFICATION_IRP_EXTENSION_VERSION_1_1 = "1nx1";
+    
+    /*
+     * Establishes a subscription based on a filter.
+     * Alarm and event notifications will be sent to specified object.
+     *
+     */
+    NotificationIRPConstDefs::SubscriptionId attach_push_ext
+	(in Object manager_reference,
+       	in long time_tick,
+       	in NotificationIRPConstDefs::NotificationCategorySet 	notification_category_set,
+       	in Filter filter)
+      raises (AttachPushExt, 
+              NotificationIRPSystem::InvalidParameter, 
+              NotificationIRPSystem::AlreadySubscribed,
+              NotificationIRPSystem::AtLeastOneNotificationCategoryNotSupported);
+    
+    
+    
+    /*
+     * Returns status information for the specified subscription.
+     *
+     */
+    NotificationIRPConstDefs::NotificationCategorySet get_subscription_status_ext
+	(in string subscription_id,
+       	out Filter filter_in_effect,
+       	out NotificationIRPConstDefs::SubscriptionState subscription_state,
+       	out long time_tick)
+      raises (GetSubscriptionStatusExt,
+              NotificationIRPSystem::InvalidParameter);
+
+
+    /*
+     * Changes the filter attached to the specified subscription.
+     *
+     */
+    void change_subscription_filter_ext(in string subscription_id,
+       				in Filter filter)	
+      raises (ChangeSubscriptionFilterExt,
+              NotificationIRPSystem::InvalidParameter);
+    
+    
+  };
+};
+
+#endif

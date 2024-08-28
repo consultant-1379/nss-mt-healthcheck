@@ -1,0 +1,276 @@
+/*
+ *  COPYRIGHT
+ *  ---------
+ *  Copyright (C) 1999 by
+ *  Ericsson Radio Systems AB
+ *  SWEDEN
+ *
+ *  The program may be used and/or copied only with the written
+ *  permission from Ericsson Radio System AB, or in accordance with
+ *  the terms and conditions stipulated in the agreement/contract
+ *  under which the program has been supplied. 
+ *   
+ *  All rights reserved.
+ *
+ * IDENTIFICATION
+ * --------------
+ * Description: This file includes operations for logging and retrieval of  
+ *              information.
+ *
+ * @(#) ClearCase ID: LogAdmin.idl /main/4 00-09-13 12:42 eraasc #
+ * 
+ *
+ * REVISION HISTORY
+ * ----------------
+ *
+ * Created: Jose Vallrud 1999-02-25
+ * Revided: 
+ * Change: 
+ *
+ * Revised: Andreas Jakobik, 00-07-04
+ * Changes: Port to VBJ 4.1
+ */
+
+#ifndef LOGADMIN_IDL
+#define LOGADMIN_IDL
+
+#include "CosNotification_F.idl"
+
+// The LogAdmin module defines the Log, LogMgr and Iterator interfaces
+module se
+{
+   module ericsson
+   {
+      module cello
+      {
+         module LogAdmin
+         {
+  
+            exception NoMemory {string details;};
+            exception LogNotFound {};
+            exception LogAlreadyExists {};
+            exception InvalidConstraint {};
+            exception LogFull {short n_records_written;};
+
+            typedef unsigned long long RecordId;
+
+             //  Defines the date structure that a log has been logged
+            struct TimeT 
+            {
+               long year;
+               long month;
+               long day;
+               long hour;
+               long minute;
+               long second;
+            };
+  
+            //  Defines the log record that will be logged
+            struct LogRecord 
+            {   
+               // Contains a unique number assigned by the log.   
+               RecordId id;
+               // Indicates the time the record is logged.
+               TimeT time;
+               // Contains the logged information.
+               CosNotification::StructuredEvent structEvt;
+            };
+   
+            //  Defines the options supported by the log 
+            enum LogFullAction
+            {
+               // Indocates the oldest record will be deleted.
+               WRAP,
+               // Indicates no more records will be logged. 
+               HALT
+            };
+
+            typedef unsigned long LogId;
+
+            typedef sequence<RecordId> RecordIdList;
+
+            typedef sequence<LogRecord> RecordList;
+   
+            //  Allows users to iterate over a list of LogRecords returned
+            //  from a query or retrieve operation. 
+            interface Iterator 
+            {
+               //  Operation: get
+               //       Returns at most how_many records starting at the position indicated
+               //       by the argument position.
+               //       In parameter how_many specify the quantity of records to get.    
+               RecordList get(in unsigned long how_many);
+               
+               //  Operation: destroy
+               //       Destroy the results of an operation without exhausting the
+               //       iterator. 
+               void destroy();
+            };
+
+            //  Quality of Services supported by the log.
+            enum QoSType
+            {
+               // Indicates no quality of service is promised by the log.
+               NONE,
+               // Indicates all records sent to the log is guaranteed to be available.
+               RELIABILITY
+            };
+
+  
+            //  The struct reflects the availability status of a log.
+            struct AvailabilityStatus 
+            {
+               // Indicates a log full condition. The log can be unavailable 
+	       // when it is ful or available.
+               boolean log_full;
+            };
+
+   
+            //  Defines the operational state of the log to performs its function.  
+            enum OperationalState
+            {
+               // Indicates the log is operational and is ready to be used.
+               ENABLED,
+               // Indicates the log is not available for use.
+               DISABLED
+            };
+
+
+            typedef string Constraint;
+
+   
+            //  The Log interface supports the following functions.  
+            interface Log 
+            {
+               //  Operation: get_operational_state
+               //       Return the operational capability of the log to perform its
+               //       function.    
+               OperationalState get_operational_state();
+
+               //  Operation: get_availability_status
+               //       Returns a struct that reflects the availability status of a log.
+               AvailabilityStatus get_availability_status();
+
+               //  Operation: get_name
+               //       Return the name of the log.
+               string get_name();
+
+               //  Operation: set_filter
+               //       Sets the filter of a log.
+               //       In parameter filter defines the filter of a log.
+               void set_filter(in Constraint filter);
+
+               //  Operation: get_qos
+               //       Returns a type of the quality of services properties supported by
+               //       the log.
+               QoSType get_qos();
+
+               //  Operation: set_qos
+               //       Sets the quality of service properties of the log.
+               //       In parameter qos indicates the type of quality of service of the
+               //       log.
+               void set_qos(in QoSType qos);
+
+               //  Operation: get_max_size
+               //       Returns the size of the log.
+               unsigned long long get_max_size();
+
+               //  Operation: set_max_size
+               //       Sets the maximum log size. A value of zero shall be used to specify
+               //       that the log size has no predefined limit.
+               //       In parameter size provide the size of a log.
+               //       If the maximum log size specified is less than the current log
+               //       size, an NoMemory exception will be raised.
+               void set_max_size(in unsigned long long size)
+                  raises(NoMemory);
+
+               //  Operation: get_log_full_action
+               //       Returns a value that specifies the action to be taken when the
+               //       maximum size of the log has been reached.
+               LogFullAction get_log_full_action();
+
+               //  Operation: set_log_full_action
+               //       Sets an action that supports the two options: wrap and halt.
+               //       In parameter action indicates the log full condition.
+               void set_log_full_action(in LogFullAction action);
+
+               //  Operation: query
+               //       Allows the User to query the log for all log records that match a
+               //       given constraint.
+               //       In parameter filter specifies which log records the User
+               //       wishes to receive.
+               //       Out parameter iter provided to deal with large queries.
+               //       If the iterator is not needed a nil object reference is returned.
+               //       If the constraint specified has errors an InvalidConstraint
+               //       exception is raised.
+               RecordList query(in Constraint filter, out Iterator iter)
+                  raises(InvalidConstraint);
+
+               //  Operation: retrieve.
+               //       Reads the records sequentially starting from a given time.
+               //       In parameter from_time indicates which time to start from.
+               //       In parameter how_many indicates how many records to retrieve.
+               //       Out parameter iter provided to deal with large retrievals.
+               //       If the iterator is not needed a nil object reference is returned.
+               RecordList retrieve(in TimeT from_time, in long how_many, out Iterator iter);
+
+               //  Operation: write_records.
+               //       Writes records to the log.
+               //       In parameter records contains information about the log record and
+               //       it is provided from the Notification package.
+               //       If the log is full, and its LogFullAction is 'HALT', a LogFull
+               //       exception will be raised, and the number of records written will be
+               //       returned with the exception.  
+               void write_records(in CosNotification::EventBatch records)
+                  raises(LogFull);
+
+               //  Operation: delete_records_by_id.
+               //       Deletes specific records from the log.
+               //       In parameter ids is a sequence of records id.
+               //       If an empty sequence of records is specified, no records will be
+               //       deleted, the operation returns a value of 0.
+               unsigned long delete_records_by_id(in RecordIdList ids);
+
+               //  Operation: destroy_log
+               //       Destroy the log.
+               boolean destroy_log();
+            };
+
+            typedef sequence<string> LogList;
+
+            //  The LogMgr interface provides the following functions. 
+            interface LogMgr 
+            {
+               //  Operation: create.
+               //       Creates log objects.
+               //       In parameter log_name defines the unique name of the log.
+               //       In parameter max_size specifies the size of the log.
+               //       In parameter qos provides the quality of service of the log.
+               //       In parameter full_action specifies the action to be taken when the
+               //       maximum size of the log has been reached. 
+               //       exception NoMemory will be raised if the max _size specified is 
+               //	     less than the current log size.
+               //       exception LogAlreadyExists will be raised if the log already 
+               //       exists.
+               Log create(in string log_name, in unsigned long long max_size, in QoSType qos, in LogFullAction full_action) 
+                  raises (NoMemory, LogAlreadyExists);
+               //  Operation: list_logs.
+               //       The User can list all log created by the log manager.  
+               LogList list_logs();
+
+               //  Operation: find_log.
+               //       the User finds a log object reference given a log distinguished
+               //       name 
+               //       In parameter log_name defines the unique name of the log.
+               //       If a log with name log_name is not found a LogNotFound   
+               //       exception will be raised.
+               Log find_log(in string log_name) 
+                  raises (LogNotFound);
+            };
+         };
+      };
+   };
+};
+
+#endif
+

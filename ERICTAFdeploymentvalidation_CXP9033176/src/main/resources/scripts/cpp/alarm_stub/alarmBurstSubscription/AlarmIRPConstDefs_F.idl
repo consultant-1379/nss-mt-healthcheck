@@ -1,0 +1,292 @@
+/* ## Module: AlarmConstDefs
+
+This module contains commonly used definitions.
+===============================================================================
+ */
+
+#ifndef  AlarmIRPConstDefs_idl
+#define  AlarmIRPConstDefs_idl
+
+#include "CosNotification_F.idl"
+
+#pragma prefix "3gppsa5.org"
+
+module AlarmIRPConstDefs {
+
+  /*
+  This block identifies all TMN ITU-T defined event types used by Alarm 
+  IRP of this version.  Their semantics are defined by ITU-T.  Their 
+  encodings for this version of Alarm IRP are defined here.  Other IRP
+  documents, or other versions of Alarm IRP, shall identify their own 
+  ITU-T defined event types for their use.  They shall define their encodings 
+  as well.  Note all values are unique among themselves.  Other IRP documents
+  can use the same values.
+  */
+
+  const string ET_COMMUNICATIONS_ALARM = "x1";
+  const string ET_PROCESSING_ERROR_ALARM = "x2";
+  const string ET_ENVIRONMENTAL_ALARM = "x3";
+  const string ET_QUALITY_OF_SERVICE_ALARM = "x4";
+  const string ET_EQUIPMENT_ALARM = "x5";
+
+
+  /*
+  This block identifies IRP defined, and not ITU-T defined, event types
+  used by this Alarm IRP version.
+  */
+
+  const string NOTIFY_FM_NEW_ALARM = "x1";
+  const string NOTIFY_FM_CHANGED_ALARM = "x2";
+  const string NOTIFY_FM_ACK_STATE_CHANGED = "x3";
+  const string NOTIFY_FM_CLEARED_ALARM = "x4";
+  const string NOTIFY_FM_ALARM_LIST_REBUILT = "x5";
+
+  /*
+  It indicates if an object has a back up.
+  True implies backep up. False implies not backed up.
+  */
+
+  typedef boolean BackedUpStatusType;
+
+  /*
+  It indicates if the threshold crossed was in the up or down direction.
+  */
+
+        enum ThresholdIndicationType {Up, Down};
+
+  /*
+  It indicates if some observed condition is getting better, worse,
+  or not changing.
+  */
+
+  enum TrendIndicationType {LessSevere, NoChange, MoreSevere};
+
+  /*
+  It is used in a notification to report a changed attribute value.
+  */
+
+        struct AttributeValueChangeType {
+                string   attributeName;
+                any      oldValue;      // type depends on attribute
+                any      newValue;      // type depends on attribute
+        };
+
+  typedef sequence <AttributeValueChangeType> AttributeChangeSetType;
+
+  /*
+  It is used in a notification to report a changed attribute value.
+  */
+
+  struct AttributeValueType {
+                string  attributeName;
+                any     value;          // type will depend on the attribute
+        };
+
+        typedef sequence <AttributeValueType> AttributeSetType;
+
+/*
+  This block identifies the levels of severity.
+  */
+
+  const short PS_INDETERMINATE= 1;
+  const short PS_CRITICAL= 2;
+  const short PS_MAJOR= 3;
+  const short PS_MINOR= 4;
+  const short PS_WARNING= 5;
+  const short PS_CLEARED= 6;
+
+  /*
+  This block identifies the acknowledgement state reported alarm.
+  */
+    const short ACK_STATE_ACKNOWLEDGED= 1;
+    const short ACK_STATE_UNACKNOWLEDGED= 2;
+
+  /*
+  This block identifies the probable cause of a reported alarm.
+  */
+const short PC_INDETERMINATE = 0;
+const short PC_ALARM_INDICATION_SIGNAL = 1;
+const short PC_CALL_SETUP_FAILURE = 2;
+const short PC_DEGRADED_SIGNAL_M3100 = 3;
+const short PC_FAR_END_RECEIVER_FAILURE = 4;
+const short PC_FRAMING_ERROR_M3100 = 5;
+const short PC_LOSS_OF_FRAME = 6;
+const short PC_LOSS_OF_POINTER = 7;
+const short PC_LOSS_OF_SIGNAL = 8;
+const short PC_PAYLOAD_TYPE_MISMATCH = 9;
+const short PC_TRANSMISSION_ERROR = 10;
+const short PC_REMOTE_ALARM_INTERFACE = 11;
+const short PC_EXCESSIVE_BIT_ERROR_RATE = 12;
+const short PC_PATH_TRACE_MISMATCH = 13;
+const short PC_UNAVAILABLE = 14;
+const short PC_SIGNAL_LABEL_MISMATCH = 15;
+const short PC_LOSS_OF_MULTI_FRAME = 16;
+const short PC_BACK_PLANE_FAILURE = 51;
+const short PC_DATA_SET_PROBLEM = 52;
+const short PC_EQUIPMENT_IDENTIFIER_DUPLICATION = 53;
+const short PC_EXTERNAL_DEVICE_PROBLEM = 54;
+const short PC_LINE_CARD_PROBLEM = 55;
+const short PC_MULTIPLEXER_PROBLEM_M3100 = 56;
+const short PC_NE_IDENTIFIER_DUPLICATION = 57;
+const short PC_POWER_PROBLEM_M3100 = 58;
+const short PC_PROCESSOR_PROBLEM_M3100 = 59;
+const short PC_PROTECTION_PATH_FAILURE = 60;
+const short PC_RECEIVER_FAILURE_M3100 = 61;
+const short PC_REPLACEABLE_UNIT_MISSING = 62;
+const short PC_REPLACEABLE_UNIT_TYPE_MISMATCH = 63;
+const short PC_SYNCHRONISATION_SOURCE_MISMATCH = 64;
+const short PC_TERMINAL_PROBLEM = 65;
+const short PC_TIMING_PROBLEM_M3100 = 66;
+const short PC_TRANSMITTER_FAILURE_M3100 = 67;
+const short PC_TRUNK_CARD_PROBLEM = 68;
+const short PC_REPLACEABLE_UNIT_PROBLEM = 69;
+const short PC_AIR_COMPRESSOR_FAILURE = 101;
+const short PC_AIR_CONDITIONING_FAILURE = 102;
+const short PC_AIR_DRYER_FAILURE = 103;
+const short PC_BATTERY_DISCHARGING = 104;
+const short PC_BATTERY_FAILURE = 105;
+const short PC_COMMERICAL_POWER_FAILURE = 106;
+const short PC_COOLING_FAN_FAILURE = 107;
+const short PC_ENGINE_FAILURE = 108;
+const short PC_FIRE_DETECTOR_FAILURE = 109;
+const short PC_FUSE_FAILURE = 110;
+const short PC_GENERATOR_FAILURE = 111;
+const short PC_LOW_BATTERY_THRESHOLD = 112;
+const short PC_PUMP_FAILURE_M3100 = 113;
+const short PC_RECTIFIER_FAILURE = 114;
+const short PC_RECTIFIER_HIGH_VOLTAGE = 115;
+const short PC_RECTIFIER_LOW_F_VOLTAGE = 116;		
+const short PC_VENTILATION_SYSTEM_FAILURE = 117;
+const short PC_ENCLOSURE_DOOR_OPEN_M3100 = 118;
+const short PC_EXPLOSIVE_GAS = 119;
+const short PC_FIRE = 120;
+const short PC_FLOOD = 121;
+const short PC_HIGH_HUMIDITY = 122;
+const short PC_HIGH_TEMPERATURE = 123;
+const short PC_HIGH_WIND = 124;
+const short PC_ICE_BUILD_UP = 125;
+const short PC_LOW_FUEL = 127;
+const short PC_LOW_HUMIDITY = 128;
+const short PC_LOW_CABLE_PRESSURE = 129;
+const short PC_LOW_TEMPERATURE = 130;
+const short PC_LOW_WATER = 131;
+const short PC_SMOKE = 132;
+const short PC_TOXIC_GAS = 133;
+const short PC_STORAGE_CAPACITY_PROBLEM_M3100 = 151;
+const short PC_MEMORY_MISMATCH = 152;
+const short PC_CORRUPT_DATA_M3100 = 153;
+const short PC_OUT_OF_CPU_CYCLES = 154;
+const short PC_SOFTWARE_ENVIRONMENT_PROBLEM = 155;
+const short PC_SOFTWARE_DOWNLOAD_FAILURE = 156;
+const short PC_ADAPTER_ERROR = 301;
+const short PC_APPLICATION_SUBSYSTEM_FAILURE = 302;
+const short PC_BANDWIDTH_REDUCTION = 303;
+const short PC_COMMUNICATION_PROTOCOL_ERROR = 305;	
+const short PC_COMMUNICATION_SUBSYSTEM_FAILURE = 306;
+const short PC_CONFIGURATION_OR_CUSTOMIZING_ERROR = 307;
+const short PC_CONGESTION = 308;
+const short PC_CPU_CYCLES_LIMIT_EXCEEDED = 310;
+const short PC_DATA_SET_OR_MODEM_ERROR = 311;
+const short PC_DTE_DCE_INTERFACE_ERROR = 313;
+const short PC_EQUIPMENT_MALFUNCTION = 315;
+const short PC_EXCESSIVE_VIBRATION = 316;
+const short PC_FILE_ERROR = 317;
+const short PC_HEATING_OR_VENTILATION_OR_COOLING_SYSTEM_PROBLEM = 321;
+const short PC_HUMIDITY_UNACCEPTABLE = 322;
+const short PC_INPUT_OUTPUT_DEVICE_ERROR = 323;
+const short PC_INPUT_DEVICE_ERROR = 324;
+const short PC_LAN_ERROR = 325;
+const short PC_LEAK_DETECTION = 326;
+const short PC_LOCAL_NODE_TRANSMISSION_ERROR = 327;
+const short PC_MATERIAL_SUPPLY_EXHAUSTED = 330;
+const short PC_OUT_OF_MEMORY = 332;
+const short PC_OUTPUT_DEVICE_ERROR = 333;
+const short PC_PERFORMANCE_DEGRADED = 334;
+const short PC_PRESSURE_UNACCEPTABLE = 336;
+const short PC_QUEUE_SIZE_EXCEEDED = 339;
+const short PC_RECEIVE_FAILURE = 340;
+const short PC_REMOTE_NODE_TRANSMISSION_ERROR = 342;
+const short PC_RESOURCE_AT_OR_NEARING_CAPACITY = 343;
+const short PC_RESPONSE_TIME_EXCESSIVE = 344;
+const short PC_RETRANSMISSION_RATE_EXCESSIVE = 345;
+const short PC_SOFTWARE_ERROR = 346;
+const short PC_SOFTWARE_PROGRAM_ABNORMALLY_TERMINATED = 347;
+const short PC_SOFTWARE_PROGRAM_ERROR = 348;
+const short PC_TEMPERATURE_UNACCEPTABLE = 350;
+const short PC_THRESHOLD_CROSSED = 351;
+const short PC_TOXIC_LEAK_DETECTED = 353;
+const short PC_TRANSMIT_FAILURE = 354;
+const short PC_UNDERLYING_RESOURCE_UNAVAILABLE = 356;
+const short PC_VERSION_MISMATCH = 357;
+const short PC_A_BIS_TO_BTS_INTERFACE_FAILURE = 501;
+const short PC_A_BIS_TO_TRX_INTERFACE_FAILURE = 502;
+const short PC_ANTENNA_PROBLEM = 503;
+const short PC_BATTERY_BREAKDOWN = 504;
+const short PC_BATTERY_CHARGING_FAULT = 505;
+const short PC_CLOCK_SYNCHRONISATION_PROBLEM = 506;
+const short PC_COMBINER_PROBLEM = 507;
+const short PC_DISK_PROBLEM = 508;
+const short PC_EXCESSIVE_RECEIVER_TEMPERATURE = 510;
+const short PC_EXCESSIVE_TRANSMITTER_OUTPUT_POWER = 511;
+const short PC_EXCESSIVE_TRANSMITTER_TEMPERATURE = 512;
+const short PC_FREQUENCY_HOPPING_DEGRADED = 513;
+const short PC_FREQUENCY_HOPPING_FAILURE = 514;
+const short PC_FREQUENCY_REDEFINITION_FAILED = 515;
+const short PC_LINE_INTERFACE_FAILURE = 516;
+const short PC_LINK_FAILURE = 517;
+const short PC_LOSS_OF_SYNCHRONISATION = 518;
+const short PC_LOST_REDUNDANCY = 519;
+const short PC_MAINS_BREAKDOWN_WITH_BATTERY_BACKUP = 520;
+const short PC_MAINS_BREAKDOWN_WITHOUT_BATTERY_BACKUP = 521;
+const short PC_POWER_SUPPLY_FAILURE = 522;
+const short PC_RECEIVER_ANTENNA_FAULT = 523;
+const short PC_RECEIVER_MULTICOUPLER_FAILURE = 525;
+const short PC_REDUCED_TRANSMITTER_OUTPUT_POWER = 526;
+const short PC_SIGNAL_QUALITY_EVALUATION_FAULT = 527;
+const short PC_TIMESLOT_HARDWARE_FAILURE = 528;
+const short PC_TRANSCEIVER_PROBLEM = 529;
+const short PC_TRANSCODER_PROBLEM = 530;
+const short PC_TRANSCODER_OR_RATE_ADAPTER_PROBLEM = 531;
+const short PC_TRANSMITTER_ANTENNA_FAILURE = 532;
+const short PC_TRANSMITTER_ANTENNA_NOT_ADJUSTED = 533;
+const short PC_TRANSMITTER_LOW_VOLTAGE_OR_CURRENT = 535;
+const short PC_TRANSMITTER_OFF_FREQUENCY = 536;
+const short PC_DATABASE_INCONSISTENCY = 537;
+const short PC_FILE_SYSTEM_CALL_UNSUCCESSFUL = 538;
+const short PC_INPUT_PARAMETER_OUT_OF_RANGE = 539;
+const short PC_INVALID_PARAMETER = 540;
+const short PC_INVALID_POINTER = 541;
+const short PC_MESSAGE_NOT_EXPECTED = 542;
+const short PC_MESSAGE_NOT_INITIALISED = 543;
+const short PC_MESSAGE_OUT_OF_SEQUENCE = 544;
+const short PC_SYSTEM_CALL_UNSUCCESSFUL = 545;
+const short PC_TIMEOUT_EXPIRED = 546;
+const short PC_VARIABLE_OUT_OF_RANGE = 547;
+const short PC_WATCH_DOG_TIMER_EXPIRED = 548;
+const short PC_COOLING_SYSTEM_FAILURE = 549;
+const short PC_EXTERNAL_EQUIPMENT_FAILURE = 550;
+const short PC_EXTERNAL_POWER_SUPPLY_FAILURE = 551;
+const short PC_EXTERNAL_TRANSMISSION_DEVICE_FAILURE = 552;
+const short PC_REDUCED_ALARM_REPORTING = 561;
+const short PC_REDUCED_EVENT_REPORTING = 562;
+const short PC_RECUCED_LOGGING_CAPABILITY = 563;
+const short PC_SYSTEM_RESOURCES_OVERLOAD = 564;
+const short PC_BROADCAST_CHANNEL_FAILURE = 565;
+const short PC_CALL_ESTABLISHMENT_ERROR = 566;
+const short PC_INVALID_MESSAGE_RECEIVED = 567;
+const short PC_INVALID_MSU_RECEIVED = 568;
+const short PC_LAPD_LINK_PROTOCOL_FAILURE = 569;
+const short PC_LOCAL_ALARM_INDICATION = 570;
+const short PC_REMOTE_ALARM_INDICATION = 571;
+const short PC_ROUTING_FAILURE = 572;
+const short PC_SS7_PROTOCOL_FAILURE = 573;
+const short PC_TRANSMISSION_FAILURE = 574;
+
+
+typedef sequence <string> AlarmInformationIdSeq;
+
+typedef CosNotification::EventBatch AlarmInformationSeq;
+
+};
+
+#endif

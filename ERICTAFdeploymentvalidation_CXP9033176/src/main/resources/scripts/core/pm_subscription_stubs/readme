@@ -1,0 +1,23 @@
+PRE-REQUISITE :
+Open 2 netsim servers(Suppose Server A and B).
+    - In server B place Pm subscription and Trigger Use case Commands files.(subscriber.sh, subscriberclient.sh,trigger.sh,chunkrunner.sh,sarcollect.sh,sarstop.sh)
+    - In server A place all the other files.
+            .
+
+STEPS:
+    1) In server A,Run getNodes.sh -> this will collect required data of all the started nodes in allNodes.job file. Copy this file to Server B.
+       sh getNodes.sh
+
+    2) In server A,Run run1.sh -> this will clear all the previous dumps of prmnrequest and prmnresponse.
+       sh run1.sh
+
+    3) In server B,Run subscriber.sh script -> to subscribe to the specified number of nodes.
+       sh subscriber.sh <NODE_DATA_FILENAME> <TIMEOUT> <LOGGING> <NUM_MOS> <NUM_NODES>
+
+    4) In server B,Add the rpc command in chunkrunner.sh script and Run trigger.sh script -> to trigger the use case( Pm subscription on 
+       specified nodes)
+       sh trigger.sh <NUM_MOS> <NUM_NODES> <NAME_SPACE> <SERVERNAME>
+
+    5) In server A,Run run.sh script -> this will generate prmnrequest and prmnresponse files and analyse the PM subscriptions and CPU Usage.
+       sh run.sh <NUM_NODES> <NUM_MOS>
+Repeat Steps from 2 to 5.

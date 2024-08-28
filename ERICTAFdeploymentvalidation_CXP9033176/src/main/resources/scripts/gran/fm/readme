@@ -1,0 +1,17 @@
+########################################################
+DESCRIPTION : THIs SCRIPT IS FOR RUNNING THE ALARMBUST COMMAND ON BSC NODES
+
+USAGE: sh trigger_alarms.sh <Nodes_File> <NUM_NODES> <NUM_FREQUENCY> <NUM_BURSTS> <NUM_ACTIVE> <NETSIM_SERVER>
+
+########################################################
+
+Pre-use case setup-
+    1) The details of the nodes , node ips and simulation name should be present in a file.
+    2) Make sure the prmn response and request are generated before the usecase where the nodes are present so as to ensure proper results.
+
+Run the use case-
+    sh triggeralarm.sh <Nodes_File> <NUM_NODES> <NUM_FREQUENCY> <NUM_BURSTS> <NUM_ACTIVE> <NETSIM_SERVER>
+
+After Use case-
+    1) Trigger the extract_response.sh with input as the prmn response file generated and the the start time where the nodes are present.
+    2) Trigger the freq_find.sh with input as the start_time end_time prmn_resp_file num_of_nodes freq where the nodes are present.

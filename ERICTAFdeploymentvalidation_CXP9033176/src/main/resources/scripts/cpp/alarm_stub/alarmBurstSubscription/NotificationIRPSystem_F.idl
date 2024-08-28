@@ -1,0 +1,135 @@
+/* ## Module: NotificationIRPSystem
+	  This module implements capabilities of IRPAgent specified in Notification
+	  IRP: Information Service version 1 and its equivalents in Notification
+    IRP: CORBA Solution Set version 1:1.
+ ==================================================================
+*/
+
+#ifndef  NotificationIRPSystem_idl
+#define  NotificationIRPSystem_idl
+
+#include "CosNotifyComm.idl"
+#include "CosNotifyChannelAdmin.idl"
+#include "NotificationIRPConstDefs_F.idl"
+#include "CommonIRPConstDefs_F.idl"
+#pragma prefix "3gppsa5.org"
+
+
+module NotificationIRPSystem {
+	
+	/* 
+  System fails to complete the operation.  System can provide reason
+  to qualify the exception.  The semantics carried in reason
+  is outside the scope of this IRP.
+  */
+
+  exception Attach { string reason; };
+  exception DetachException { string reason; };
+
+  exception GetSubscriptionStatus { string reason; };
+  exception GetSubscriptionIds { string reason; };
+  exception ChangeSubscriptionFilter { string reason; };
+  exception GetNotificationCategories { string reason; };
+  exception GetNotificationIRPVersion { string reason; };
+  exception ParameterNotSupported { string parameter; };
+    // name of the unsupported parameter as defined in IDL
+  exception InvalidParameter { string parameter; };
+    // name of the parameter as defined in IDL
+  exception OperationNotSupported {};
+  exception AlreadySubscribed {};
+  exception AtLeastOneNotificationCategoryNotSupported {};
+
+
+	interface NotificationIRPOperations {
+
+    /* ## Operation: attach_push
+    */
+    NotificationIRPConstDefs::SubscriptionId attach_push (
+      in Object manager_reference,
+      in long time_tick,
+      in NotificationIRPConstDefs::NotificationCategorySet notification_category_set,
+      in string filter
+    )
+    raises (Attach, ParameterNotSupported, InvalidParameter, AlreadySubscribed,
+            AtLeastOneNotificationCategoryNotSupported);
+
+    /* ## Operation: attach_push_b
+    */
+                NotificationIRPConstDefs::SubscriptionId attach_push_b (
+      in Object manager_reference,
+      in long time_tick,
+      in NotificationIRPConstDefs::NotificationCategorySet notification_category_set,
+      in string filter,
+      out CosNotifyChannelAdmin::SequenceProxyPushSupplier system_reference
+    )
+    raises (Attach,OperationNotSupported,ParameterNotSupported,InvalidParameter,
+            AlreadySubscribed,AtLeastOneNotificationCategoryNotSupported);
+
+
+    /* ## Operation: attach_pull
+    */
+                NotificationIRPConstDefs::SubscriptionId attach_pull (
+       in Object manager_reference,
+       in long time_tick,
+       in NotificationIRPConstDefs::NotificationCategorySet notification_category_set,
+       in string filter,
+       out CosNotifyChannelAdmin::SequenceProxyPullSupplier system_reference
+    )
+    raises (Attach, OperationNotSupported, ParameterNotSupported,
+            InvalidParameter, AlreadySubscribed,
+            AtLeastOneNotificationCategoryNotSupported);
+
+
+    /* ## Operation: detach
+    */
+		void detach (
+      in Object manager_reference,
+      in string subscription_id
+    )
+    raises (DetachException,InvalidParameter);
+
+    /* ## Operation: get_notification_IRP_version
+    */
+    CommonIRPConstDefs::VersionNumberSet get_notification_IRP_version ()
+    raises (GetNotificationIRPVersion)
+    ;
+
+    /* ## Operation: get_subscription_status
+    */
+		NotificationIRPConstDefs::NotificationCategorySet get_subscription_status (
+      in string subscription_id,
+      out string filter_in_effect,
+      out NotificationIRPConstDefs::SubscriptionState subscription_state,
+      out long time_tick
+    )
+    raises (GetSubscriptionStatus,OperationNotSupported,InvalidParameter);
+
+    /* ## Operation: get_subscription_ids
+    */
+    NotificationIRPConstDefs::SubscriptionIdSet get_subscription_ids (
+      in Object manager_reference
+    )
+    raises (GetSubscriptionIds,OperationNotSupported,InvalidParameter);
+
+    /* ## Operation: change_subscription_filter
+    */
+		void change_subscription_filter (
+			in string subscription_id,
+			in string filter
+    )
+    raises (ChangeSubscriptionFilter,OperationNotSupported,InvalidParameter);
+
+    /* ## Operation: get_notification_categories
+    */
+    NotificationIRPConstDefs::NotificationCategorySet
+         get_notification_categories (
+      out NotificationIRPConstDefs::EventTypesSet event_type_list,
+      out NotificationIRPConstDefs::ExtendedEventTypesSet
+         extended_event_type_list
+    )
+    raises (GetNotificationCategories,OperationNotSupported);
+	};
+
+};
+
+#endif

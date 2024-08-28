@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="logCollectorExecutionTestSuite">
+
+    <test name="logCollectorExecutionTest">
+        <classes>
+            <class name="com.ericsson.ci.nss.test.cases.logCollectorExecutionTest"/>
+        </classes>
+    </test>
+
+</suite>

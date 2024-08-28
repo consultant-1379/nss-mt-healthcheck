@@ -1,0 +1,48 @@
+#################################################################################################
+PRE USE CASE SETUP -
+
+DESCRIPTION - To generate the oids get requests commands
+
+USAGE -
+
+1) Make sure the Traces file is present in the path where you have the stubs.
+
+2) Trigger the file generate_oids.sh <Trace.log>
+        -> Trace.log is the file which has the traces.
+
+        3) generate_oids.sh will produce check.txt , check2.txt , check3.txt , li.txt for future reference of commands.
+
+        4) The output generated in li.txt is a list with the commands.
+
+        5) Copy the commands from list and run the command on the node
+            -> e: [begin {value,Y} = snmpa:name_to_oid(X), netsim_snmp_util:oid_to_string(Y) end || X <- [ Counterlist(commands list)]].
+
+            6) Copy the output to out.log file
+
+            7) Trigger the match_oids.sh file -> sh match_oids.sh
+
+            8) Trigger the generate_junipercommands.sh file -> sh generate_junipercommands.sh
+
+            9) The output is in script1.sh
+
+            10) Run the file generatestub.sh which will produce the script juniperpmcounter.sh
+
+            #####################################################################################################
+
+            USE CASE -[M 5*
+
+            Trigger the ciscopmstub with the required inputs as mentioned.
+            ./ciscopmstub.sh -f <function> -n <No. of nodes> -i <id> -s <client> -r <server> -p <protocol>
+
+            #(check this task)Note: snmpget.sh need to be run parallely. It should not be completed before ciscopmstub.sh run.
+            Note- Make sure that the nodeips.txt file is present in the Client server where the nodes are present.
+
+            ######################################################################################################
+            #
+            AFTER USE CASE
+             Note - To be triggered from the server where the nodes are present
+             1. Run generaterequestprmn.sh and generateresponseprmn.sh to generate prmn files.
+             2. Copy removeGetResp.sh to inst and run with input prmn file. It removes all extra snmpget(heartbeat get) performed by snmpget.sh.
+             3. Trigger analyzer.sh
+
+

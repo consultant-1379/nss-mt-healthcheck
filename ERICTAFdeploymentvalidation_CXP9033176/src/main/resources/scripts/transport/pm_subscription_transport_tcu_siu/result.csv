@@ -1,0 +1,48 @@
+21.6756,94.5,0
+20-08-18 09:52:34 : 100,100,200,passed
+27.988,95.15,0
+20-08-18 10:23:08 : 200,200,400,passed
+26.2919,93.52,0
+20-08-18 10:52:56 : 300,300,600,passed
+33.6156,100,2
+20-08-18 11:22:57 : 400,400,800,passed
+29.6102,95,0
+20-08-18 11:53:08 : 500,500,1000,passed
+38.1944,100,1
+20-08-18 12:23:20 : 600,600,1200,passed
+35.4198,96.28,0
+20-08-18 12:53:38 : 700,700,1400,passed
+43.9702,100,2
+20-08-18 13:23:24 : 800,800,1600,passed
+47.1304,100,23
+20-08-18 13:53:31 : 900,900,1800,passed
+51.5331,100,11
+20-08-18 14:23:41 : 1000,1000,2000,passed
+44.7594,100,3
+21-08-18 07:53:29 : 1100,1100,1880,failed
+51.3366,100,6
+21-08-18 10:53:49 : 1100,1100,2200,passed
+59.4384,100,46
+21-08-18 11:23:57 : 1200,1200,2400,passed
+55.6492,100,12
+21-08-18 11:53:45 : 1300,1300,2600,passed
+62.0705,100,48
+21-08-18 12:24:12 : 1400,1400,2800,passed
+Number of ROPs to be failed :2
+Number of ROPs to be failed :2
+Number of ROPs to be failed :2
+65.9515,100,156
+03-09-18 08:53:12 : 1200,1200,0,failed
+Number of ROPs to be failed :3
+Number of ROPs to be failed :2
+Number of ROPs to be failed :2
+Number of ROPs to be failed :3
+Number of ROPs to be failed :2
+41.3152,100,78
+04-09-18 08:38:34 : 1200,1200,0,failed
+Number of ROPs to be failed :3
+Number of ROPs to be failed :2
+Number of ROPs to be failed :2
+Number of ROPs to be failed :2
+Number of ROPs to be failed :0
+Number of ROPs to be failed :0

@@ -1,0 +1,35 @@
+#ifndef  FMEVENT_IDL
+#define  FMEVENT_IDL
+
+#pragma prefix "cello.ericsson.se"
+module FMEvent {
+
+  /*
+  This block identifies the event type to be used
+  */
+
+  const string ET_FM_EVENT = "0";
+
+   /*
+  This block encapsulates string used in the name of the Name Value
+  pair of the structured event.
+  */
+
+  const string NV_SPECIFIC_EVENT = "z";
+
+  /*
+  This block encapsulates a  string carried in domain_name of
+  structured event header when a FM Event message is sent.
+  This is not a value included in any IRP specification
+  */
+  const string FM_EVENT_VERSION_1_1 = "1z1";
+  
+  /*
+  This block encapsulates a  string carried in event_name of
+  structured event header when a FM Event message is sent
+  */
+
+  const string NOTIFY_FM_NEW_EVENT = "z1";
+ };
+
+#endif

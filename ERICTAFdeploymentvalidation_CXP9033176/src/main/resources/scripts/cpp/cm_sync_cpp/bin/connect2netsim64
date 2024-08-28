@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+# $Id: connect2netsim,v 1.12 2016/08/18 15:10:35 xdodcha Exp $
+
+cd $SIMROOT
+. $SIMROOT/architectures.sh
+
+platform=$ERLARCH
+case $ERLARCH in
+    solaris2)
+        ps=/usr/ucb/ps
+        ;;
+    *) # Linux
+        ps=/bin/ps
+        ;;
+esac
+
+beam="platf_indep_otp/suse11X64/erts-9.2/bin/beam"
+cookie=`$ps auxww | grep -v grep | grep $beam | grep -v logtool | grep -v relay | grep -v scep_server | grep -v ^root | head -1 | sed 's,.*\(-setcookie [^ ]*\).*$,\1,'`
+kernel=`$ps auxww | grep -v grep | grep $beam | grep -v logtool | grep -v relay | grep -v scep_server | grep -v ^root | head -1 | sed 's,.*\(-kernel net_ticktime [^ ]* -kernel net_setuptime [^ ]*\).*$,\1,'`
+
+while true; do
+    select process in `$ps auxww | grep $beam | grep -v grep | grep -v relay | grep -v scep_server | grep -v ^root | sed 's,.*name \([^ ]*\).*$,\1,' | sort; echo "Refresh"; echo "Quit"`
+    do
+        case $process in
+            ("Refresh") break ;;
+            ("Quit") exit;;
+            (*)
+                cd "$SIMROOT"
+                if [ "$USE_LONG_NAME" = "yes" ]; then
+                    kliens=`echo $process | sed 's,@,_kliens@,'`
+                    platf_indep_otp/$platform/bin/erl -name $kliens $cookie $kernel -remsh ${process}
+                else
+                    platf_indep_otp/$platform/bin/erl -sname ${process}_kliens $cookie $kernel -remsh ${process}@`$hostname`
+                fi;;
+        esac
+    done
+done
+
+cd -
+

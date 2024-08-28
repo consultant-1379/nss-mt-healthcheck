@@ -1,0 +1,8 @@
+Steps:
+    
+1. Run collector.sh in nodes vm to get nodes details.
+2. Run trigger.sh in stubs vm to run pm38_create_MOs usecase.
+    Note: e.g., to run pm38 on 20 nodes, 20.job file should there.
+3. The stats will be stored in totalstat.log
+
+

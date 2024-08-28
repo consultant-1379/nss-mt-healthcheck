@@ -1,0 +1,123 @@
+/* ## Module: NotificationIRPConstDefs
+This module contains definitions specific to Notification IRP.
+==============================================================
+*/
+
+#ifndef  NOTIFICATIONIRPCONSTDEFS_IDL
+#define  NOTIFICATIONIRPCONSTDEFS_IDL
+#pragma prefix "3gppsa5.org"
+
+module NotificationIRPConstDefs {
+
+  /* 
+  This is a string sequence identifying notification categories.
+  A notification category is identified by the IRP name and its version.
+  */
+  typedef sequence <string> NotificationCategorySet;
+
+  /*
+  This is a sequence of strings identifying event types of a particular
+  notification category.
+  */
+  typedef sequence <string> EventTypesPerNotificationCategory;
+
+  /*
+  This sequence identifies all event types of all notification categories
+  identified by NotificationCategorySet.  The number of elements in this
+  sequence shall be identical to that of NotificationCategorySet.
+  */
+  typedef sequence <EventTypesPerNotificationCategory> EventTypesSet;
+
+  /*
+  This is a sequence of strings identifying extended event types of
+  a particular notification category.
+  */
+  typedef sequence <string> ExtendedEventTypePerNotificationCategory;
+
+  /*
+  This sequence identifies all extended event types of all notification
+  categories identified by NotificationCategorySet.  The number of elements
+  in this sequence shall be identical to that of NotificationCategorySet.
+  */
+  typedef sequence <ExtendedEventTypePerNotificationCategory>
+      ExtendedEventTypesSet;
+
+  typedef sequence <long> NotifIDSetType;
+
+  /* 
+  This holds identifiers of notifications that are correlated.
+  */
+
+  struct CorrelatedNotification {
+	  string source; // Contains DN of MO that emitted the set of notifications
+                   // DN string format in compliance with Name Convention for
+                   //  Managed Object.
+                   // This may be a zero-length string.  In this case, the MO
+                   // is identified by the value of the MOI parameter-attribute
+                   //  of the Structured Event, i.e., the notification.
+	  NotifIDSetType notifIDSet;
+  };
+
+  /*
+  Correlated Notification sets are sets of Correlated Notification
+  structures.
+  */
+  typedef sequence <CorrelatedNotification> CorrelatedNotificationSetType;
+
+  /*
+  This is a sequence of strings identifying Subscription Ids.
+  */
+  typedef string SubscriptionId;
+  typedef sequence <SubscriptionId> SubscriptionIdSet;
+
+  /*
+  This block encapsulates valid strings carried in domain_name of
+  structured event header.  It carries the name of IRP and its
+  corresponding CORBA SS version number.  They are the returned
+  values for get_XXX_IRP_version() as well.
+  */
+  const string ALARM_IRP_VERSION_1_1 = "1f1";  //alarm IRP 1:1
+  const string CONFIGURATION_IRP_VERSION_1_1 = "1c1"; //CM IRP 1:1
+
+  /*
+  This string is used as return value for get_notification_irp_version()
+  */
+  const string NOTIFICATION_IRP_VERSION_1_1 = "1n1"; //Notification IRP 1:1
+
+
+  /*
+  This block encapsulates string used in the name of the Name Value
+  pair of the structured event.
+  */
+
+  const string NV_NOTIFICATION_ID = "a";
+  const string NV_CORRELATED_NOTIFICATIONS = "b";
+  const string NV_EVENT_TIME = "c";
+  const string NV_SYSTEM_DN = "d";
+  const string NV_MANAGED_OBJECT_CLASS = "e";
+  const string NV_MANAGED_OBJECT_INSTANCE = "f";
+  const string NV_PROBABLE_CAUSE = "g";
+  const string NV_PERCEIVED_SEVERITY = "h";
+  const string NV_SPECIFIC_PROBLEM = "i";
+  const string NV_ADDITIONAL_TEXT = "j";
+  const string NV_ALARM_ID = "k";
+  const string NV_ACK_USER_ID = "l";
+  const string NV_ACK_TIME = "m";
+  const string NV_ACK_SYSTEM_ID = "n";
+  const string NV_ACK_STATE = "o";
+  const string NV_BACKED_UP_STATUS = "p";
+  const string NV_BACK_UP_OBJECT = "q";
+  const string NV_THRESHOLD_INFO = "r";
+  const string NV_TREND_INDICATION = "s";
+  const string NV_STATE_CHANGE_DEFINITIONS = "t";
+  const string NV_MONITORED_ATTRIBUTES = "u";
+  const string NV_PROPOSED_REPAIRED_ACTIONS = "v";
+
+  /*
+  This indicates if the subscription is active (not suspended) or inactive.
+  */
+  enum SubscriptionState {Inactive, Active, DontKnow};
+
+};
+
+#endif

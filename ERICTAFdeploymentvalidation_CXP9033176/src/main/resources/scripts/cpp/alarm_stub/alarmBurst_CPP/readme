@@ -1,0 +1,45 @@
+#AlarmBurst CPP 
+
+PRE-REQUISITE :
+    Open 2 netsim servers (Suppose Server A and B).
+    - In server A place alarmBurst scripts folder.
+    - In server B place subscription scripts(java) folder.
+
+STEPS :
+
+1) Ensure only the ipv4 nodes of all the required simulations are started in server A and then run the getNodes.sh script.
+    - This will collect all the required data of the started nodes and store in allNodes.job file.
+        sh getNodes.sh
+    
+2) Copy allNodes.job file(created in previous step) in server B inside subscription scripts folder.
+
+3) Run subscribe.sh script in server B.
+    - This will subscribe to all the nodes present in allNodes.job folder till the specified <TIMEOUT> after that it will unsubscribe.
+    sh subscribe.sh allNodes.job <TIMEOUT>
+
+Now till the timeout time you can run the below steps in loop.(i.e. till the nodes are subscribed)
+#---------------------------------------------------------------------#
+4) In server A, run alarmburst_multiple.sh.
+    - This will select the specified number of nodes and run alarmburst command on them.
+        sh alarmBurstExecutor_multiple.sh -n <NUM_NODES> -a <NUM_ALARMS> -f <NUM_FREQUENCY> -o <SAR_OPTION> (0 - OFF(by default)/ 1 - ON)
+
+5) In server A,Go to inst/prmnresponse and delete all files using
+    - rm -rf *
+
+6) In server A, generate prmnresponse file.
+    
+    - go to inst folder
+    -    ./bin/connect2netsim
+    -    Select the prmnresponse option
+    -    Give below command to generate prmnresponse file
+        response_handler:log_responses({YYYY,MM,DD,HH},{YYYY,MM,DD,HH}).
+        If the date command in server A gives -> (Mon Jul 16 08:59:22 IST 2018) the command will look like
+        response_handler:log_responses({2018,7,16,8},{2018,7,16,9}).
+    - This will generate prmnresponse file in inst/prmnresponse folder.
+        Copy this file to alarmburst scripts folder.
+
+7) In server A, run the responseTime.sh.
+    - This will calculate start and end time of commands and also the CPU Usage,Time Difference.
+    sh responseTime.sh <PRMNRESPONSE_FILENAME>
+
+#---------------------------------------------------------------------#

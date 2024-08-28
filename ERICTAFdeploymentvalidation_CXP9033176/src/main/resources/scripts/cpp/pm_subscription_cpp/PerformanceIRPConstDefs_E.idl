@@ -1,0 +1,320 @@
+/*
+ *  COPYRIGHT
+ *  ---------
+ *  Copyright (C) 2000 by
+ *  Ericsson Radio Systems AB
+ *  SWEDEN
+ *
+ *  The program may be used and/or copied only with the written
+ *  permission from Ericsson Radio System AB, or in accordance with
+ *  the terms and conditions stipulated in the agreement/contract
+ *  under which the program has been supplied.
+ *
+ *  All rights reserved.
+ *
+ *  IDENTIFICATION
+* PerformanceIRPConstDefs.idl revision A- ERA/LVN/DM-00:0033 
+* -------------based on Performance IRP-Information Service version 2, LME/DTF-98:2063 rev B:
+ *  
+    00-10-05  *
+ *
+ *  REVISION HISTORY
+ *  ----------------
+ *
+ *  Revised: ERASTWI 00-10-03 
+ *  Changes: -First revision.
+
+
+*/
+
+//## Module: PerformanceIRPConstDefs 
+//## Documentation::
+//	  This package includes const string assignments for the Performance  IRP.
+
+
+
+#include "CommonIRPConstDefs_E.idl"
+//#include "CommonIRPConstDefs.idl"
+#include <TimeBase.idl>	
+
+
+// ==================================================================
+
+
+#ifndef PerformanceIRPConstDefs_E_idl
+#define PerformanceIRPConstDefs_E_idl
+// ==================================================================
+
+module PerformanceIRPConstDefs 
+{
+   
+   //## FilterableDataValue Documentation:
+   //      This IRP specifies one type of name-value (NV) pair
+   //      that can appear in filterable_data field of
+   //      StructuredEvent.
+   
+   //      It is technical possible for System to duplicate
+   //      NV-pairs in filterable_data.  This IRP does not allow
+   //      such behavior.  In case of such use, Actor's
+   //      behavior specification is outside the scope of this
+   //      IRP.  It can be unpredictable.
+   //## Category: Const_Declarations
+   
+   interface FilterableDataValue {
+      //##begin FilterableDataValue.initialDeclarations preserve=yes
+      //##end FilterableDataValue.initialDeclarations
+      
+      // Attributes
+      
+      const string PERFORMANCE_MONITORING_ID = "1";
+      const string PERFORMANCE_DATA_REPORT_REFERENCE = "2";
+      const string PERFORMANCE_EVENT_ID = "3";
+
+
+
+      // Relationships
+      
+      
+      // Associations
+      
+      
+      // Operations
+      
+      
+      
+      
+   };
+   
+   //## TypeNameValue Documentation:
+   //      The number of type names and their values are
+   //      defined in this IRP.  The type names corresponds
+   //      to the notifications defined in NotificationHandler.
+   //## Category: Const_Declarations
+   
+   interface TypeNameValue {
+      
+      // Attributes
+      
+      const string NOTIFY_PERFORMANCE_DATA = "1";
+      const string NOTIFY_PERFORMANCE_DATA_AVAILABLE = "2";
+      const string NOTIFY_PERFORMANCE_EVENT = "3";
+      
+      // Relationships
+      
+      
+      // Associations
+      
+      
+      // Operations 
+      
+   };
+
+   //## Category: Const_Declarations
+   
+   interface DomainNameValue {
+      
+      // Attributes
+      
+      const string THIS_DOMAIN_NAME_AND_VERSION = "PerformanceIRP 2:2";
+      
+   };
+   
+   
+   typedef sequence<string> NotSupportedParameters;
+   
+ 
+   
+   enum Direction
+   {
+      RISING, 
+      FALLING
+   };
+   enum AttrType
+   {
+      INTEGER_ATTR,
+      REAL_ATTR
+   };
+   
+   enum EventCategory
+   {
+      ACTIVITY_OCCURED,
+      THRESHOLD_PASSED,                  
+      PERIODIC_EVENT 
+   };
+enum Destination
+   {
+      FILE,
+      NOTIFICATION,                  
+      NOTIFICATION_AND_FILE 
+   };   
+   enum SuspectFlag
+   {
+      FALSE_,
+      TRUE_ 
+   };
+   
+   
+   
+
+   //## TimePeriodInSeconds Documentation:
+   //      Holds a time period in the form of seconds.
+
+   typedef long TimePeriodInSeconds;
+
+//## RepeatedIntervals Documentation:
+//      Holds a sequence of time periods in seconds. The first time period 
+// specifies the duration of the active state Performance Monitoring, the 
+//second specifies the sleep duration for the Performance Monitoring and so on.
+
+   typedef sequence <TimePeriodInSeconds> RepeatedIntervals; 
+   
+   
+   union AttrValue switch(AttrType) {
+      case INTEGER_ATTR: long i_attribute;
+      case REAL_ATTR: double r_attribute;
+   };
+   
+ 
+
+   
+
+   typedef sequence<string> IdSeq;
+   
+   
+
+//## TimeWindow Documentation:
+   //      Holds a time period pair in the form of seconds before the event and seconds after the event.
+    typedef sequence< TimePeriodInSeconds,2> TimeWindow;
+//## SamplingRate Documentation:
+   //      Holds a number that specifies the sampling rate of an event, for example every 10th event is written to the report 
+    typedef long SamplingRate ;
+
+   
+   
+   typedef sequence<string> AttributeList;
+   
+   
+   
+   
+   struct ObservationClass {
+      
+      // Attributes
+      
+      string object_class_name;
+      AttributeList class_attribute_list;
+   };
+   
+   typedef sequence<ObservationClass> ObservationClassList;
+   
+   
+   //## InstanceList Documentation:
+   //      A list of observed object instances
+   
+   typedef sequence<string> InstanceList;
+   
+typedef long PerformanceMonitoringId;
+
+
+
+
+   typedef sequence<PerformanceMonitoringId> PerformanceMonitoringIdList;   
+   
+   
+   //  This structure is used for transfer of the performance data
+   struct PerformanceMonitoringReport 
+   {
+      PerformanceMonitoringId        performance_monitoring_id;
+      long                           sequence_number;       
+      TimeBase::TimeT                scan_initiation_time;
+      TimePeriodInSeconds            granularity_period;
+      InstanceList                   instance_list;
+      AttributeList                  attribute_list;
+      sequence <long>                observed_values;
+      sequence <TimePeriodInSeconds> time_stamp;
+      sequence <SuspectFlag>         suspect_flag;
+   };
+   
+   
+   //  This structure is used for transfer of the performance events
+   struct PerformanceEvent {
+      string                observed_object_instance;
+      EventCategory         event_category;
+      long                  event_id;
+      sequence <string>     attribute_name; 
+      sequence <long>       attribute_value;
+      sequence <SuspectFlag> suspect_flag;
+      TimeBase::TimeT       event_time;
+      sequence <string>     additional_info_name;
+      sequence <any>        additional_info_value;
+      
+   };
+   
+   struct Filter {
+      sequence <string>    attribute_name;
+      sequence <string>    attribute_value;
+   };
+   struct Schedule {
+      
+      CommonIRPConstDefs::IRPTime              start_time;
+      CommonIRPConstDefs::IRPTime              end_time;
+      RepeatedIntervals repeated_intervals;
+
+      
+   };
+   
+   
+   typedef string MeasurementName;
+   
+   enum PerformanceMonitoringState
+   {
+      ACTIVE,
+      SUSPENDED
+   };
+    enum RecordingType
+   {
+      EVENT_DATA,
+      MEASUREMENT_DATA,
+EVENT_AND_MESUREMENT_DATA
+   };
+   
+   
+   
+   enum FailureInformation
+   {
+      NO_FAILURE,
+      OBJECT_NOT_EXIST,
+      OBJECTCLASS_NOT_EXIST 
+   };
+   
+   
+   
+   
+   //## Category: PerformanceIRP-1
+   //## Subsystem: PerforIRP-1
+   
+   struct ObservationObject {
+      
+      // Attributes
+      
+      InstanceList instance_list;
+      AttributeList instance_attribute_list;
+      
+   };
+
+   typedef sequence<ObservationObject> ObservationObjectList;
+
+
+   typedef string NeId ;
+   typedef sequence<NeId> NeList;
+
+struct PerformanceMonitoring
+   {
+      PerformanceMonitoringId performance_monitoring_id;
+      MeasurementName measurement_name;
+      PerformanceMonitoringState state;
+   };
+typedef sequence<PerformanceMonitoring> PerformanceMonitoringList;
+
+};
+
+#endif

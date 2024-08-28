@@ -1,0 +1,19 @@
+#######In the server where the node are present( Server 1)#################
+1. Run the getNodes.sh to get details of all started nodes into allNodes.job
+
+    usage : sh getNodes.sh
+
+2. Run the getsimnodes.sh to get details of specific type of nodes into selNodes.txt.
+
+        usage: sh getsimnodes.sh BSC
+
+3. Run the filterNodes.sh to filter the BSC nodes from the allNodes.job into nodeips.txt.
+
+            usage: sh filterNodes.sh allNodes.job selNodes.txt
+
+4. copy the nodeips.txt file to other server where the scripts are present(server-2).
+
+####### In the server where the scripts are present(server-2) ##############
+5. Run trigger.sh to execute the OPS commands on the nodes.
+
+6. Observe the results in the totalstat.log .

@@ -1,0 +1,45 @@
+#include "PerformanceIRPSystem_F.idl"
+#ifndef      PERFORMANCE_MONITORING_SERVICE_EXTENDED_IDL
+#define      PERFORMANCE_MONITORING_SERVICE_EXTENDED_IDL
+module PmServiceExtended
+{
+  /**
+   * This interface is an extension of the Performance IRP 2:2 which is used for new additions to PMCI.
+    *
+    */
+  interface PerformanceMonitoringExtended:PerformanceIRPSystem::PerformanceMonitoringOperations
+  {
+      /**
+       * Create a generic performance monitoring report which accepts MOs that are not present
+       * on the node. In all other aspects this method is identical with the method create_performance_monitoring.
+       */
+      CommonIRPConstDefs::Signal create_generic_performance_monitoring
+      (in PerformanceIRPConstDefs::ObservationClassList observation_class_list,
+       in PerformanceIRPConstDefs::ObservationObjectList observation_object_list,
+       in PerformanceIRPConstDefs::TimePeriodInSeconds granularity_period,
+       in PerformanceIRPConstDefs::Schedule schedule,
+       in PerformanceIRPConstDefs::TimePeriodInSeconds reporting_period,
+       in PerformanceIRPConstDefs::Destination destination,
+       in PerformanceIRPConstDefs::MeasurementName measurement_name,
+       in PerformanceIRPConstDefs::PerformanceMonitoringState performance_monitoring_state,
+       out PerformanceIRPConstDefs::PerformanceMonitoringId performance_monitoring_id,
+       out PerformanceIRPConstDefs::FailureInformation failure_information)
+       raises (PerformanceIRPSystem::OptionalOperationNotSupportedException,
+               PerformanceIRPSystem::OptionalParameterNotSupportedException,
+             PerformanceIRPSystem::InvalidObservationObjectListException,
+               PerformanceIRPSystem::InvalidObservationClassException,
+              PerformanceIRPSystem::InvalidGranularityPeriodException,
+               PerformanceIRPSystem::InvalidParameterException,
+               PerformanceIRPSystem::InvalidScheduleException,
+               PerformanceIRPSystem::InvalidReportingPeriodException,
+               PerformanceIRPSystem::DestinationNotSupportedException,
+               PerformanceIRPSystem::ProcessingErrorException,
+              PerformanceIRPSystem::NumberOfCountersExceededException,
+              PerformanceIRPSystem::NumberOfMonitorsExceededException,
+               PerformanceIRPSystem::OverloadException,
+               PerformanceIRPSystem::GranularityNotSupportedException,
+               PerformanceIRPSystem::GranularityAndAttributeActivationException
+               );
+   };
+};
+#endif

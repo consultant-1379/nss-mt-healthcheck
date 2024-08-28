@@ -1,0 +1,1410 @@
+#ifndef CONFIGURATION_IDL
+#define CONFIGURATION_IDL
+
+#include <CosNaming.idl>         // CORBA Naming Service
+#include <TimeBase.idl>          // CORBA Time Service
+
+/**
+ *
+ * (C) Copyright Ericsson Radio Systems AB, 1999
+ *
+ * The copyright to the computer program(s) herein is the property of Ericsson
+ * Radio Systems AB, Sweden. The program(s) may be used and/or copied only with
+ * the written permission from Ericsson Radio System AB or in accordance with
+ * the terms and conditions stipulated in the agreement/contract under which
+ * the program(s) have been supplied.
+ *
+ * File Name: 19089_CXA1100243_cs.idl
+ *
+ * Component: 190 89-CXA 110 0243 E
+ *
+ * Version created by: LM/ERA/LVA/ED Torbjörn Eriksson
+ *
+ * In view:
+ *
+ * ClearCase Version:
+ *
+ * Date:
+ *
+ * Modifications: <developer name> <description> <date>
+ *
+ * Description:
+ * For more information see Configuration Service Programmer's Guide,
+ * 198 17-APR 901 61 Uen.
+ *
+ * @version    CXA 110 0243 P1E
+ * @author     Ulf Aronsson, Per Bergman, Torbjörn Eriksson
+ * @date       2000-03-09
+ */
+module BasicConfig
+{
+
+  /**
+   * Redefinitions
+   */
+
+  typedef CosNaming::Name DName;
+  typedef TimeBase::TimeT TimeT;
+
+
+  /**
+   * Definitions of Basic Quality of Service
+   */
+
+  typedef unsigned short QoSType;
+  typedef sequence<QoSType> QoSList;
+
+  const QoSType QOS_NONE           =   0;
+  const QoSType QOS_MIBS           =   1;
+  const QoSType QOS_NOTIFICATIONS  =   2;
+  const QoSType QOS_MG             =   4;
+  const QoSType QOS_HOPPER_SL      =   8;
+  const QoSType QOS_FINEGRAINED    =  16;
+  const QoSType QOS_DISTRIBUTION   =  32;
+
+
+  /**
+   * Exceptions
+   */
+
+  exception AlreadyDefined {string info;};
+  exception NotDefined {string info;};
+  exception NotAccepted {string info;};
+  exception ProcessingFailure {string reason;};
+  exception UnsupportedQoS {QoSList supportedQoS;};
+  exception SecurityViolation {string reason;};
+  exception TransactionFailure {string reason;};
+
+
+  /**
+   * Forward declarations
+   */
+
+  interface BasicConfiguration;
+  interface ManagedObject;
+  typedef sequence<ManagedObject> ManagedObjectSeq;
+
+  typedef unsigned long long OIDTYPE;
+
+  /**
+   * Definitions for MIM and MIB
+   */
+
+  struct MIBRef {
+    OIDTYPE oid;
+  };
+  typedef sequence<MIBRef> MIBRefSeq;
+
+  typedef string MIBName;
+  typedef string MIMName;
+  typedef string MIMVersion;
+  typedef unsigned long MIBID;
+
+  struct MIBInfo {
+    MIBID id;
+    MIBName name;
+    MIMName type;
+    TimeT created;
+    MIMVersion version;
+    DName prefix;
+  };
+
+
+  /**
+   * Definitions for Managed Group
+   */
+
+  struct MGRef {
+    OIDTYPE oid;
+  };
+  typedef sequence<MGRef> MGRefSeq;
+
+  typedef string MGName;
+  typedef unsigned long MGID;
+
+  struct MGInfo {
+    MGID id;
+    MGName name;
+    TimeT created;
+  };
+
+
+  /**
+   * Definitions for MO
+   */
+
+  typedef string MOName;
+  typedef sequence<MOName> MONames;
+  typedef string MOType;
+
+  struct NameValue {
+    string name;
+    any value;
+  };
+  typedef sequence<NameValue> NameValueSeq;
+
+  typedef string AttributeName;
+  typedef sequence<AttributeName> AttributeNameSeq;
+  typedef NameValueSeq AttributeSeq;
+  typedef NameValue Parameter;
+  typedef NameValueSeq ParameterSeq;
+  typedef string ActionName;
+
+  struct MORef {
+    OIDTYPE oid;
+    BasicConfiguration cid;
+    string type;
+  };
+  typedef sequence<MORef> MORefSeq;
+
+  struct ExtMORef {
+    OIDTYPE oid;
+    BasicConfiguration cid;
+    NameValueSeq nvs;
+  };
+  typedef sequence<ExtMORef> ExtMORefSeq;
+
+  struct AttrMORef {
+    OIDTYPE oid;
+    BasicConfiguration cid;
+    NameValueSeq nvs;
+  };
+  typedef sequence<AttrMORef> AttrMORefSeq;
+
+  enum MOidpairKind {RefType, DNType};
+  union MOidpair switch (MOidpairKind) {
+    case RefType : MORef ref;
+    case DNType :  DName name;
+  };
+  typedef sequence<MOidpair> MOidpairSeq;
+
+  struct MOAttrValue {
+    MORef mo;
+    sequence<any> attrValues;
+  };
+  typedef sequence<MOAttrValue> MOAttrValueSeq;
+
+  enum PlanningStateType {
+    PlanningStateType_UNPLANNED,
+    PlanningStateType_CREATED,
+    PlanningStateType_DELETED,
+    PlanningStateType_CHANGED,
+    PlanningStateType_CONTAINSPLANNED
+  };
+
+  struct MOInfo {
+    MORef ref;
+    MOType type;
+    DName localDN;
+    DName fullDN;
+    PlanningStateType planningState;
+    MIBName mib;
+    TimeT created;
+  };
+
+  /**
+   * UndefinedValue is to be used whenever an any
+   * shall have an undefined value.
+   * Parameter dummy can be set to whatever
+   */
+  struct UndefinedValue {
+    long dummy;
+  };
+
+
+  /**
+   * Definition for Scope & Filter.
+   */
+
+  typedef long Scope;
+  const Scope SCOPE_ALL_LEVELS = -1;
+
+  struct Filter {
+    string type;
+    string constraint;
+  };
+
+
+  /**
+   * Definitions of Iterator.
+   */
+
+  typedef unsigned long IterId;
+  struct IterRef {
+    IterId id;
+  };
+  struct ExtIterRef {
+    IterId id;
+  };
+  struct AttrIterRef {
+    IterId id;
+  };
+
+
+   /**
+   * Definitions for notifications
+   */
+
+  struct AttributeInfo {
+    AttributeName name;
+    any oldValue;
+    any newValue;
+  };
+  typedef sequence<AttributeInfo> AttributeInfos;
+
+
+  enum ChangedInfo {
+    ChangedInfo_CREATED,
+    ChangedInfo_DELETED
+  };
+
+  struct DNinfo {
+    DName name;
+    ChangedInfo change;
+  };
+  typedef sequence<DNinfo> DNinfos;
+  typedef sequence<DName> DNames;
+
+  typedef string RelationType;
+
+  struct RelInfo {
+    DNames mos;
+    RelationType relType;
+    ChangedInfo change;
+  };
+  typedef sequence<RelInfo> RelInfos;
+
+  struct TopologyChangedInfo {
+    DNinfos affectedMOs;
+    RelInfos affectedRels;
+  };
+
+ /**
+   * Definitions of Session.
+   */
+  typedef long SessionTimeout;
+  const SessionTimeout SESSION_USE_DEFAULT_TIMEOUT = -1;
+  typedef long TransactionTimeout;
+  const TransactionTimeout TRANSACTION_USE_DEFAULT_TIMEOUT = -1;
+
+
+  /**
+   * Definition of the MOAssociation used for mandatory association.
+   */
+
+  struct MOAssociation {
+    MOidpair toMO;
+    string fromRoleName;
+    string toRoleName;
+    string relName;
+  };
+  typedef sequence<MOAssociation> MOAssociationSeq;
+
+
+
+
+  /**
+   * Session interface
+   */
+
+  interface Session {
+    string get_session_id();
+
+    void restart()
+      raises (ProcessingFailure);
+
+    void begin(in TransactionTimeout operationTimeout)
+      raises(ProcessingFailure);
+
+    void rollback()
+      raises(TransactionFailure);
+
+    void commit()
+      raises(TransactionFailure);
+
+    void end()
+      raises(TransactionFailure);
+  };
+
+
+  /**
+   * BasicConfiguration interface
+   */
+
+  interface BasicConfiguration {
+
+    /**
+     * Methods for Session
+     */
+
+    Session create_session(in string id, in SessionTimeout idleTimeout)
+      raises (ProcessingFailure);
+
+
+    /**
+     * Methods for MIB.
+     */
+
+    MIBRef create_MIB(in MIBName name,
+                      in MIMName type,
+                      in MIMVersion version,
+                      in Session session)
+      raises (UnsupportedQoS,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    void delete_MIB(in MIBRef mib,
+                    in Session session)
+      raises (UnsupportedQoS,
+              NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    MIBRef get_MIB(in MIBName name,
+                   in Session session)
+      raises (UnsupportedQoS,
+              NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    MIBRefSeq get_MIBs(in Session session)
+      raises (UnsupportedQoS,
+              NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+    MORef basic_create_root_MO(in string name,
+                               in string type,
+                               in AttributeSeq attributes,
+                               in MOAssociationSeq associations,
+                               in MIBRef mib,
+                               in Session session)
+       raises (ProcessingFailure,
+               SecurityViolation,
+               NotDefined,
+               AlreadyDefined);
+
+
+    MORef basic_get_root_MO(in MIBRef mib,
+                            in Session session)
+        raises (ProcessingFailure,
+            SecurityViolation,
+                NotDefined);
+
+    MIBInfo get_MIB_info(in MIBRef mib,
+                         in Session session)
+      raises (UnsupportedQoS,
+              NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    void set_MIM_version(in MIBRef mib,
+                         in MIMVersion version,
+                         in Session session)
+      raises (UnsupportedQoS,
+              NotDefined,
+              NotAccepted,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    void set_prefix_MIB(in MIBRef mib,
+                        in DName prefix,
+                        in Session session)
+      raises (UnsupportedQoS,
+              NotDefined,
+              NotAccepted,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+
+    /**
+     * Methods for Managed Group
+     */
+
+    MGRef create_MG(in MGName name,
+                    in MORefSeq mos,
+                    in Filter filter,
+                    in Scope scope,
+                    in Session session)
+      raises (UnsupportedQoS,
+              NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    void delete_MG(in MGRef mg,
+                   in Session session)
+      raises (UnsupportedQoS,
+              NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    MGRefSeq get_MGs(in Session session)
+      raises (UnsupportedQoS,
+              NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    MGRef get_MG(in MGID id,
+                 in Session session)
+      raises (UnsupportedQoS,
+              NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    IterRef get_MG_contents_short(in MGRef mg,
+                                  inout unsigned long count,
+                                  out MORefSeq result,
+                                  in Session session)
+      raises (UnsupportedQoS,
+              NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    ExtIterRef get_MG_contents_full(in MGRef mg,
+                                    inout unsigned long count,
+                                    out ExtMORefSeq result,
+                                    in Session session)
+      raises (UnsupportedQoS,
+              NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    MGInfo get_MG_info(in MGRef mg,
+                       in Session session)
+      raises (UnsupportedQoS,
+              NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    void add_MO_to_MG(in MGRef mg,
+                      in MORefSeq mos,
+                      in Filter filter,
+                      in Scope scope,
+                      in Session session)
+      raises (UnsupportedQoS,
+              NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    void remove_MO_from_MG(in MGRef mg,
+                           in MORefSeq mos,
+                           in Session session)
+      raises (UnsupportedQoS,
+              NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    /**
+     * Methods for MOs
+     */
+
+    MORef basic_create_MO(in MOName name,
+                          in MOType type,
+                          in MOidpair baseMO,
+                          in MOidpair sourceMO,
+                          in AttributeSeq attributes,
+                          in MOAssociationSeq associations,
+                          in Session session)
+      raises (AlreadyDefined,
+              NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    void basic_delete_MO(in MOidpair baseMO,
+                         in MGRef mg,
+                         in Scope scope,
+                         in Filter filter,
+                         in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    IterRef basic_set_MO(in MOidpair baseMO,
+                         in MGRef mg,
+                         in Scope scope,
+                         in Filter filter,
+                         in AttributeSeq attributes,
+                         in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    IterRef basic_get_MO_containment_short(in MOidpair baseMO,
+                                       in MGRef mg,
+                                           in Scope scope,
+                                           in Filter filter,
+                                           inout unsigned long count,
+                                           out MORefSeq result,
+                                           in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    ExtIterRef basic_get_MO_containment_full(in MOidpair baseMO,
+                                         in MGRef mg,
+                                             in Scope scope,
+                                             in Filter filter,
+                                             inout unsigned long count,
+                                             out ExtMORefSeq result,
+                                             in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    AttrIterRef basic_get_attr_MO_containment(in MOidpair baseMO,
+                                                 in Scope scope,
+                                                 in Filter filter,
+                                                 in AttributeNameSeq attributeNames,
+                                                 in Session session)
+      raises (NotDefined,
+              NotAccepted,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    IterRef basic_get_MO_association_short(in MOidpair baseMO,
+                                           in string roleName,
+                                       in MGRef mg,
+                                           in Scope scope,
+                                           in Filter filter,
+                                           inout unsigned long count,
+                                           out MORefSeq result,
+                                           in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    ExtIterRef basic_get_MO_association_full(in MOidpair baseMO,
+                                             in string roleName,
+                                     in MGRef mg,
+                                             in Scope scope,
+                                             in Filter filter,
+                                             inout unsigned long count,
+                                             out ExtMORefSeq result,
+                                             in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    AttrIterRef basic_get_attr_MO_association(in MOidpair baseMO,
+                                                 in string roleName,
+                                                 in Scope scope,
+                                                 in Filter filter,
+                                                 in AttributeNameSeq attributeNames,
+                                                 in Session session)
+      raises (NotDefined,
+              NotAccepted,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    boolean basic_is_existing(in MOidpair mo,
+                              in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    void basic_create_association(in MOidpair fromMO,
+                                   in MOAssociationSeq associations,
+                                   in Session session)
+      raises (UnsupportedQoS,
+              NotDefined,
+              AlreadyDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    void basic_delete_association(in MOidpair fromMO,
+                   in MOAssociationSeq associations,
+                                   in Session session)
+      raises (UnsupportedQoS,
+              NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    void basic_lock_MO(in MOidpair mo,
+                       in MGRef mg,
+                       in Session session)
+      raises (UnsupportedQoS,
+              NotDefined,
+              AlreadyDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    void basic_unlock_MO(in MOidpair mo,
+                         in MGRef mg,
+                         in Session session)
+      raises (UnsupportedQoS,
+              NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    boolean basic_is_locked_MO(in MOidpair mo,
+                               in MGRef mg,
+                               in Session session)
+      raises (UnsupportedQoS,
+              NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    /**
+     * Methods on a MO
+     */
+
+    MOInfo basic_get_MO_info(in MOidpair mo,
+                       in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    MORef basic_get_MO_parent(in MOidpair mo,
+                        in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    void basic_get_MO_attributes(in MOidpair mo,
+                           in AttributeNameSeq attributeNames,
+                           out AttributeSeq attributes,
+                           in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    void basic_set_MO_attributes(in MOidpair mo,
+                           in AttributeSeq attributes,
+                           in Session session)
+      raises (NotDefined,
+              NotAccepted,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    any action(in MOidpair mo,
+               in ActionName name,
+               inout ParameterSeq parameters,
+               in Session session)
+      raises (UnsupportedQoS,
+              NotDefined,
+              NotAccepted,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+
+    ManagedObject convert_MO(in MOidpair mo)
+      raises (UnsupportedQoS,
+              NotDefined,
+              NotAccepted,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    ManagedObjectSeq convert_MOs(in MOidpairSeq mos)
+      raises (UnsupportedQoS,
+              NotDefined,
+              NotAccepted,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    /**
+     * Methods for the iterator.
+     */
+
+    boolean next_MO(in IterRef iterator,
+                    out MORef mo,
+                    in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    boolean next_MOs(in IterRef iterator,
+                     in unsigned long howMany,
+                     out MORefSeq mos,
+                     in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    boolean all_MOs(in IterRef iterator,
+                    out MORefSeq mos,
+                    in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    void delete_Iter(in IterRef iterator,
+                     in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    /**
+     * Methods for the extended iterator.
+     */
+
+    boolean ext_next_MO(in ExtIterRef iterator,
+                        out ExtMORef mo,
+                        in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    boolean ext_next_MOs(in ExtIterRef iterator,
+                         in unsigned long howMany,
+                         out ExtMORefSeq mos,
+                         in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    boolean ext_all_MOs(in ExtIterRef iterator,
+                        out ExtMORefSeq mos,
+                        in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    void ext_delete_Iter(in ExtIterRef iterator,
+                         in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+    /**
+     * Methods for the attribute iterator.
+     */
+
+    boolean attr_next_MO(in AttrIterRef iterator,
+                        out AttrMORef mo,
+                        in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    boolean attr_next_MOs(in AttrIterRef iterator,
+                         in unsigned long howMany,
+                         out AttrMORefSeq mos,
+                         in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    boolean attr_all_MOs(in AttrIterRef iterator,
+                        out AttrMORefSeq mos,
+                        in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    void attr_delete_Iter(in AttrIterRef iterator,
+                         in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+    /**
+     * QoS
+     */
+
+    QoSList get_QoS(in Session session);
+
+
+    QoSList set_QoS(in QoSList newQoS,
+                    in Session session)
+      raises (SecurityViolation,
+              ProcessingFailure);
+
+
+    QoSList supported_QoS(in Session session)
+      raises (SecurityViolation,
+              ProcessingFailure);
+
+
+
+    /**
+     * Hoppers and Soft Links
+     */
+
+    void create_hopper(in MOidpair sourceMO,
+                               in DName targetMO,
+                               in MIBName targetMIB,
+                               in Session session)
+      raises (UnsupportedQoS,
+                  AlreadyDefined,
+                  NotAccepted,
+                  SecurityViolation,
+                  ProcessingFailure);
+
+
+    void delete_hopper(in MOidpair sourceMO,
+               in MOidpair targetMO,
+                       in Session session)
+      raises (UnsupportedQoS,
+                  NotDefined,
+                  SecurityViolation,
+                  ProcessingFailure);
+
+
+    void create_association_hopper(in MOidpair sourceMO,
+                                           in DName targetMO,
+                                           in MIBName targetMIB,
+                                           in string roleName,
+                                           in string relName,
+                                           in Session session)
+      raises (UnsupportedQoS,
+                  AlreadyDefined,
+                  NotAccepted,
+                  SecurityViolation,
+                  ProcessingFailure);
+
+
+    void delete_association_hopper(in MOidpair sourceMO,
+                                   in MOidpair targetMO,
+                                   in string roleName,
+                                   in string relName,
+                                           in Session session)
+      raises (UnsupportedQoS,
+                  NotDefined,
+                  SecurityViolation,
+                  ProcessingFailure);
+
+
+    void create_softlink(in MOidpair sourceMO,
+                                     in DName targetMO,
+                         in MIBName targetMIB,
+                         in Session session)
+      raises (UnsupportedQoS,
+                  AlreadyDefined,
+                  NotAccepted,
+                  SecurityViolation,
+                  ProcessingFailure);
+
+
+    void delete_softlink(in MOidpair sourceMO,
+                                     in MOidpair targetMO,
+                         in Session session)
+      raises (UnsupportedQoS,
+                  NotDefined,
+                  SecurityViolation,
+                  ProcessingFailure);
+
+  };
+
+
+
+  /**
+   * Interface for fine grain solution
+   */
+
+  interface ManagedObject {
+
+    void set(in DName mo,
+             in AttributeSeq attributes,
+             in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    void get(in DName mo,
+             in AttributeNameSeq attributeNames,
+             out AttributeSeq attributes,
+             in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    MOidpair get_parent(in DName mo,
+                        in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    MOidpairSeq get_containment(in DName mo,
+                                in Scope scope,
+                                in Session session)
+      raises (SecurityViolation,
+              ProcessingFailure);
+
+
+    MOidpairSeq get_association(in DName mo,
+                                in string roleName,
+                                in Scope scope,
+                                in Session session)
+      raises (SecurityViolation,
+              ProcessingFailure);
+
+
+    any action(in DName mo,
+               in ActionName name,
+               inout ParameterSeq parameters,
+               in Session session)
+      raises (UnsupportedQoS,
+              NotDefined,
+              NotAccepted,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    MOInfo get_info(in DName mo,
+                    in Session session)
+      raises (SecurityViolation,
+              ProcessingFailure);
+
+
+    void lock(in DName mo,
+              in Session session)
+      raises (NotDefined,
+              AlreadyDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    void unlock(in DName mo,
+              in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+
+
+    boolean is_locked(in DName mo,
+              in Session session)
+      raises (NotDefined,
+              SecurityViolation,
+              ProcessingFailure);
+  };
+};
+
+
+
+
+
+
+module Config
+{
+
+  /**
+   * Redefinitions
+   */
+
+/* XXX REMOVED REDEFINITIONS SINCE IT IS NOT NEEDED!!!!
+  typedef CosNaming::Name DName;
+  typedef TimeBase::TimeT TimeT;
+
+  typedef BasicConfig::QoSType QoSType;
+  typedef BasicConfig::QoSList QoSList;
+  typedef BasicConfig::Session Session;
+  typedef BasicConfig::OIDTYPE OIDTYPE;
+  typedef BasicConfig::MGRef MGRef;
+  typedef BasicConfig::MGRefSeq MGRefSeq;
+  typedef BasicConfig::MIBRef MIBRef;
+  typedef BasicConfig::MIBRefSeq MIBRefSeq;
+  typedef BasicConfig::IterRef IterRef;
+  typedef BasicConfig::ExtIterRef ExtIterRef;
+  typedef BasicConfig::AttrIterRef AttrIterRef;
+  typedef BasicConfig::MOName MOName;
+  typedef BasicConfig::MOType MOType;
+  typedef BasicConfig::MOidpair MOidpair;
+  typedef BasicConfig::AttributeSeq AttributeSeq;
+  typedef BasicConfig::AttributeNameSeq AttributeNameSeq;
+  typedef BasicConfig::Scope Scope;
+  typedef BasicConfig::Filter Filter;
+  typedef BasicConfig::MOInfo MOInfo;
+  typedef BasicConfig::MORef MORef;
+  typedef BasicConfig::MORefSeq MORefSeq;
+  typedef BasicConfig::ExtMORef ExtMORef;
+  typedef BasicConfig::ExtMORefSeq ExtMORefSeq;
+  typedef BasicConfig::AttrMORef AttrMORef;
+  typedef BasicConfig::AttrMORefSeq AttrMORefSeq;
+  typedef BasicConfig::MOAttrValueSeq MOAttrValueSeq;
+  typedef BasicConfig::MOAssociation MOAssociation;
+  typedef BasicConfig::MOAssociationSeq MOAssociationSeq;
+*/
+
+
+
+  /**
+   * Definitions of Extended Quality of Service
+   */
+
+  const BasicConfig::QoSType QOS_PLANNEDCONFIG    =  64;
+  const BasicConfig::QoSType QOS_HISTORICALCONFIG = 128;
+
+
+  /**
+   * Definitions for configuration
+   */
+
+  struct ConfigRef {
+    BasicConfig::OIDTYPE oid;
+  };
+  typedef sequence<ConfigRef> ConfigRefSeq;
+
+  typedef string ConfigurationName;
+  typedef unsigned long ConfigurationId;
+  struct ConfigurationInfo {
+    ConfigurationId id;
+    ConfigurationName name;
+    BasicConfig::TimeT created;
+    string description;
+  };
+
+
+  /**
+   * Configuration interface
+   */
+
+  interface Configuration : BasicConfig::BasicConfiguration {
+
+    /**
+     * Methods for configurations.
+     */
+
+    ConfigRef create_configuration(in ConfigurationName name,
+                                   in BasicConfig::Session session)
+      raises (BasicConfig::UnsupportedQoS,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    ConfigRef copy_configuration(in ConfigRef baseConfiguration,
+                                 in ConfigurationName name,
+                                 in BasicConfig::Session session)
+      raises (BasicConfig::UnsupportedQoS,
+              BasicConfig::NotDefined,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    void delete_configuration(in ConfigRef configuration,
+                              in BasicConfig::Session session)
+      raises (BasicConfig::UnsupportedQoS,
+              BasicConfig::NotDefined,
+              BasicConfig::NotAccepted,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    ConfigRef get_configuration(in ConfigurationId id,
+                                in BasicConfig::Session session)
+      raises (BasicConfig::UnsupportedQoS,
+              BasicConfig::NotDefined,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    ConfigRef get_valid_configuration(in BasicConfig::Session session)
+      raises (BasicConfig::UnsupportedQoS,
+              BasicConfig::NotDefined,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    ConfigRefSeq get_configurations(in boolean includeValid,
+                                    in BasicConfig::Session session)
+      raises (BasicConfig::UnsupportedQoS,
+              BasicConfig::NotDefined,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    ConfigurationInfo get_configuration_info(in ConfigRef configuration,
+                                             in BasicConfig::Session session)
+      raises (BasicConfig::UnsupportedQoS,
+              BasicConfig::NotDefined,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    void update(in ConfigRef configuration,
+        in BasicConfig::NameValueSeq optionalArg,
+                in BasicConfig::Session session)
+      raises (BasicConfig::UnsupportedQoS,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    /**
+     * Methods for MOs
+     */
+
+
+    BasicConfig::MOInfo get_MO_info(in ConfigRef configuration,
+               in BasicConfig::MOidpair mo,
+                       in BasicConfig::Session session)
+      raises (BasicConfig::NotDefined,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    BasicConfig::MORef get_MO_parent(in ConfigRef configuration,
+            in BasicConfig::MOidpair mo,
+                        in BasicConfig::Session session)
+      raises (BasicConfig::NotDefined,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    void get_MO_attributes(in ConfigRef configuration,
+               in BasicConfig::MOidpair mo,
+                           in BasicConfig::AttributeNameSeq attributeNames,
+                           out BasicConfig::AttributeSeq attributes,
+                           in BasicConfig::Session session)
+      raises (BasicConfig::NotDefined,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    void set_MO_attributes(in ConfigRef configuration,
+               in BasicConfig::MOidpair mo,
+                           in BasicConfig::AttributeSeq attributes,
+                           in BasicConfig::Session session)
+      raises (BasicConfig::NotDefined,
+              BasicConfig::NotAccepted,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    BasicConfig::MORef create_MO(in ConfigRef configuration,
+                    in BasicConfig::MOName name,
+                    in BasicConfig::MOType type,
+                    in BasicConfig::MOidpair baseMO,
+                    in BasicConfig::MOidpair sourceMO,
+                    in BasicConfig::AttributeSeq attributes,
+                    in BasicConfig::MOAssociationSeq associations,
+                    in BasicConfig::Session session)
+      raises (BasicConfig::AlreadyDefined,
+              BasicConfig::NotDefined,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    void delete_MO(in ConfigRef configuration,
+                   in BasicConfig::MOidpair baseMO,
+                   in BasicConfig::MGRef mg,
+                   in BasicConfig::Scope scope,
+                   in BasicConfig::Filter filter,
+                   in BasicConfig::Session session)
+      raises (BasicConfig::NotDefined,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    BasicConfig::MORef create_root_MO(in ConfigRef configuration,
+                         in string name,
+                         in string type,
+                         in BasicConfig::AttributeSeq attributes,
+                         in BasicConfig::MOAssociationSeq associations,
+                         in BasicConfig::MIBRef mib,
+                         in BasicConfig::Session session)
+       raises (BasicConfig::ProcessingFailure,
+               BasicConfig::SecurityViolation,
+               BasicConfig::NotDefined,
+               BasicConfig::AlreadyDefined);
+
+
+    BasicConfig::MORef get_root_MO(in ConfigRef configuration,
+                      in BasicConfig::MIBRef mib,
+                      in BasicConfig::Session session)
+        raises (BasicConfig::ProcessingFailure,
+              BasicConfig::SecurityViolation,
+                  BasicConfig::NotDefined);
+
+    BasicConfig::IterRef set_MO(in ConfigRef configuration,
+                   in BasicConfig::MOidpair baseMO,
+                   in BasicConfig::MGRef mg,
+                   in BasicConfig::Scope scope,
+                   in BasicConfig::Filter filter,
+                   in BasicConfig::AttributeSeq attributes,
+                   in BasicConfig::Session session)
+      raises (BasicConfig::NotDefined,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    BasicConfig::IterRef get_MO_containment_short(in ConfigRef configuration,
+                                     in BasicConfig::MOidpair baseMO,
+                                 in BasicConfig::MGRef mg,
+                                     in BasicConfig::Scope scope,
+                                     in BasicConfig::Filter filter,
+                                     inout unsigned long count,
+                                     out BasicConfig::MORefSeq result,
+                                     in BasicConfig::Session session)
+      raises (BasicConfig::NotDefined,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    BasicConfig::ExtIterRef get_MO_containment_full(in ConfigRef configuration,
+                                       in BasicConfig::MOidpair baseMO,
+                                   in BasicConfig::MGRef mg,
+                                       in BasicConfig::Scope scope,
+                                       in BasicConfig::Filter filter,
+                                       inout unsigned long count,
+                                       out BasicConfig::ExtMORefSeq result,
+                                       in BasicConfig::Session session)
+      raises (BasicConfig::NotDefined,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    BasicConfig::AttrIterRef get_attr_MO_containment(in ConfigRef configuration,
+                                           in BasicConfig::MOidpair baseMO,
+                                           in BasicConfig::Scope scope,
+                                           in BasicConfig::Filter filter,
+                                           in BasicConfig::AttributeNameSeq attributeNames,
+                                           in BasicConfig::Session session)
+      raises (BasicConfig::NotDefined,
+              BasicConfig::NotAccepted,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    BasicConfig::IterRef get_MO_association_short(in ConfigRef configuration,
+                                     in BasicConfig::MOidpair baseMO,
+                                     in string roleName,
+                                 in BasicConfig::MGRef mg,
+                                     in BasicConfig::Scope scope,
+                                     in BasicConfig::Filter filter,
+                                     inout unsigned long count,
+                                     out BasicConfig::MORefSeq result,
+                                     in BasicConfig::Session session)
+      raises (BasicConfig::NotDefined,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    BasicConfig::ExtIterRef get_MO_association_full(in ConfigRef configuration,
+                                       in BasicConfig::MOidpair baseMO,
+                                       in string roleName,
+                                   in BasicConfig::MGRef mg,
+                                       in BasicConfig::Scope scope,
+                                       in BasicConfig::Filter filter,
+                                       inout unsigned long count,
+                                       out BasicConfig::ExtMORefSeq result,
+                                       in BasicConfig::Session session)
+      raises (BasicConfig::NotDefined,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    BasicConfig::AttrIterRef get_attr_MO_association(in ConfigRef configuration,
+                                           in BasicConfig::MOidpair baseMO,
+                                           in string roleName,
+                                           in BasicConfig::Scope scope,
+                                           in BasicConfig::Filter filter,
+                                           in BasicConfig::AttributeNameSeq attributeNames,
+                                           in BasicConfig::Session session)
+      raises (BasicConfig::NotDefined,
+              BasicConfig::NotAccepted,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    boolean is_existing(in ConfigRef configuration,
+                        in BasicConfig::MOidpair mo,
+                        in BasicConfig::Session session)
+      raises (BasicConfig::NotDefined,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    void create_association(in ConfigRef configuration,
+                             in BasicConfig::MOidpair fromMO,
+                             in BasicConfig::MOAssociationSeq associations,
+                             in BasicConfig::Session session)
+      raises (BasicConfig::UnsupportedQoS,
+              BasicConfig::NotDefined,
+              BasicConfig::AlreadyDefined,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    void delete_association(in ConfigRef configuration,
+                             in BasicConfig::MOidpair fromMO,
+                                 in BasicConfig::MOAssociationSeq associations,
+                             in BasicConfig::Session session)
+      raises (BasicConfig::UnsupportedQoS,
+              BasicConfig::NotDefined,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    void lock_MO(in ConfigRef configuration,
+                 in BasicConfig::MOidpair mo,
+                 in BasicConfig::MGRef mg,
+             in BasicConfig::Session session)
+      raises (BasicConfig::UnsupportedQoS,
+              BasicConfig::NotDefined,
+              BasicConfig::AlreadyDefined,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    void unlock_MO(in ConfigRef configuration,
+                   in BasicConfig::MOidpair mo,
+                   in BasicConfig::MGRef mg,
+                   in BasicConfig::Session session)
+      raises (BasicConfig::UnsupportedQoS,
+              BasicConfig::NotDefined,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+
+
+    boolean is_locked_MO(in ConfigRef configuration,
+                         in BasicConfig::MOidpair mo,
+                         in BasicConfig::MGRef mg,
+                         in BasicConfig::Session session)
+      raises (BasicConfig::UnsupportedQoS,
+              BasicConfig::NotDefined,
+              BasicConfig::SecurityViolation,
+              BasicConfig::ProcessingFailure);
+  };
+};
+
+#endif
+

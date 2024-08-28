@@ -1,0 +1,6 @@
+#!/bin/sh
+SIMROOT=/netsim/R30F
+export SIMROOT
+USE_LONG_NAME=no
+export USE_LONG_NAME
+/netsim/R30F/newbin/connect2netsim64 "$@"

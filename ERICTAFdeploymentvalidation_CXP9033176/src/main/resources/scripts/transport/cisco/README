@@ -1,0 +1,15 @@
+# CISCO PM file stub
+
+# Copy the scripts to Client and Server NETSim VMs
+
+# Server - VM where nodes are present.  Client - VM where stubs are run
+
+# Generate the nodeips.txt in the Server VM by triggering the getNodes.sh script
+
+# Copy the nodeips.txt file to the Client VM where scripts are present
+
+# Trigger the stub from the Client VM using the below command
+# sh ciscopmstub.sh -f get_pm_counters -n 40 -p SSH -s `hostname -i` -r 10.141.11.225 -i `date +%s`
+
+# Run the analyzer.sh script in the Server VM after the script execution
+# This will generate a finallog.txt file which will give the max netsim processing time for each node

@@ -1,0 +1,15 @@
+
+Step 1:
+    Run findNodes.sh in the target NETSim VM(Server-1)(where nodes are present) to fetch all the started nodes details into allNodes.txt .
+
+   Note:
+       1. This findNodes.sh fetches all types of nodes and so , extract required dg2 nodes from the allNodes.txt.
+       2. This allNodes.txt contains both IPv4 and IPv6 nodes. Modify this file as your requirement.
+Step 2:
+    Connect to another VM(Server-2) and copy all these script files.
+Step 3:
+    Copy the allNodes.txt from target Server-1 VM to Server-2 VM and into the directory of the scripts copied.
+Step 4:
+    Run commandExecutor.sh to execute the ltallcommands on all the nodes parallelly.
+Step 5:
+    Observe the statistics in the totalstat.log file

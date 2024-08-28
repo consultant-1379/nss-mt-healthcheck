@@ -1,0 +1,43 @@
+Project: Stub for SHM actions on CPP nodes
+
+Syntax:
+./shmcppstub.sh -f <FUNCTION> -n <NUM_NODES> -p <PROTOCOL> -i <JOB_ID> -s <SERVER> -r <NETSIM SERVER>
+             FUNCTION - amos
+                        amos_ssh
+                        amos_combined
+                        swupgrade
+                        brmbackup
+            NUM_NODES - Should be less than or equal to the nodes mentioned in nodeips.txt file
+            PROTOCOL - SSH/TLS
+            JOB_ID - Unique id
+            SERVER - Server IP to download upgrade package or export the backup file
+            NETSIM_SERVER - Server IP where the nodes are present
+
+Note:
+
+1)Unique jobid can be created as below
+jobid=`date +%s`
+
+2)Copy the CXPL17BCP1_G1284.xml file to /var/tmp path in the FTP server
+Corresponding server details has to be updated in the conf.txt file.
+
+3)Generate the nodeips.txt file by running the script on the NETSim server where the nodes
+are present. Copy the nodeips.txt file to the server where SHM stubs to be executed.
+
+4)Script has to be executed to any other server where the nodes are reachable for ssh/ssl
+
+Examples:
+
+BACKUP:
+
+The below command will create the backup, export to the FTP server, delete the backup after export
+
+./shmcppstub.sh -f brmbackup -n 10 -i $jobid -s 10.141.11.186 -p TLS -r 10.141.11.187
+
+CLEAN BACKUP:
+
+SOFTWARE UPGRADE:
+
+The below command will upgrade the package on the node
+
+./shmcppstub.sh -f swupgrade -n 10 -i $jobid -s 10.141.11.186 -p TLS -r 19.141.11.187

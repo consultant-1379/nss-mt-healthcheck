@@ -1,0 +1,19 @@
+Steps:
+Nodes VM:
+1.  Run all_getNodes.sh to get the nodes details in allNodes.job file.
+2. Make 1.job 10.job etc., files with same number of nodes as per file name.
+3.Copy these .job files to stubs vm.
+
+Stubs VM:
+1. Create directories with all node names in the path /var/tmp/esc . And copy mkdirNode.sh , check.sh and del.sh to /var/tmp/esc path.
+    Note: Use mkdirNode.sh with hard code changes.
+2. Run trigger.sh to enable pm subscription on the given nodes.
+3. Then , Run res.sh to pause the pm collection.
+4. After waiting for required number of ROPs , run resume.sh to resume pm collection.
+5. Now, collect sar manually (e.g., sar 1 | tee sar_160_3.log) from immediate ROP start time untill all the files are collected correctly in /var/tmp/esc path.
+    Note: e.g., If PM collection paused for 3 ROPs , there should be 4 files for each node.
+    Note: In /var/tmp/esc path,  check.sh can be used to verify the files collected and  del.sh can be used to delete unwanted files collected for current test.
+6. Run  sarstop.sh with input of sar file which is collected manually.
+    Note: before running sarstop.sh , Remove starting line of the sar file as sar startTime presents on second line.
+7. Observe the stats in totalstat.log
+8. Repeat the same with multiple ROPs and multiple nodes.

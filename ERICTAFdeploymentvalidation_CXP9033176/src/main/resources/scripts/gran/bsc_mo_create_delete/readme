@@ -1,0 +1,40 @@
+###########################################################################################################
+
+DESCRIPTION : TO FIND OUT HOW MANY MO CREATE / DELETE REQUESTS CAN BE SUPPORTED MY MULTIPLE NODES IN ONE VM.
+
+###########################################################################################################
+
+PRE-USECASE SETUP:-
+   
+   -> THE CREATE MO REQUEST NETCONF COMMAND SHOULD BE GENERATED FIRST WHICH IS DEPENDENT ON USE CASE OF HOW MANY MO CREATE REQUEST/DELETE REQUEST SHOULD BE DONE
+   
+   -> TO GENERATE THE COMMAND WITH 'N' CREATE/DELETE MO'S , gen_req.sh SHOULD BE TRIGGERED WITH NUMBER OF MO CREATE AS INPUT PARAMETER AND THE NODES FILE WITH NODE NAME AND SIMULATION SHOULD BE PRESENT IN THE CURRENT WORKING DIRECTORY.
+        Ex:- sh gen_req.sh 100 nodes.txt will create a command with 100 mo create requests with output command in <NODENAME>.txt 
+   
+   -> SIMILARLY FOR DELETE REQ sh gen_req_delete.sh <number of delete request> SHOULD BE TRIGGERED.
+
+############################################################################################################
+
+USE-CASE SETUP:-
+
+    -> BSC NODES SHOULD BE KEPT IN A INPUT FILE WITH NODE_NAME,NODE_IP.
+
+    -> NETCONF SUBSCRIPTION SHOULD BE CREATED BEFORE THE USE CASE BY TRIGGERING subscriber.sh <node_file> <time_out> <logging true or false>
+        -> FOR GENERATING NODE FILE , getNodes.sh SHOULD BE RUN IN THE BOX WHERE THE NODES ARE PRESENT WHICH WILL GENERATE AllNodes.job.
+
+    -> PRMN REQUEST AND RESPONSE SHOULD BE GENERATED IN THE BOX WHERE THE NODES ARE PRESENT SO THAT THE PREVIOUS ACTIVITIES ON THE NODES ARE NEGLECTED.
+
+    -> NOW THE MAIN SCRIPT trigger.sh <num of nodes> SHOULD BE TRIGGERED.
+        -> num of nodes SHOULD BE PRESENT IN NODE FILE WITH NODE NAME AND NODE IP.
+
+############################################################################################################
+
+AFTER USE-CASE :-
+
+    -> generatereqprmn.sh and generateresprmn.sh SHOULD BE TRIGGERED IN THE BOX WHERE NODES ARE PRESENT.
+
+    -> calci_time.sh SHOULD BE TRIGGERED WITH INPUTS AS <PRMNRESPONSE.log> <PRMNREQUESTS.log> <RESULTS.txt> <nodes.txt> <NUMBER_OF_MO_CREATED>
+
+    -> RESULTS ARE STORED IN observations.txt
+
+    

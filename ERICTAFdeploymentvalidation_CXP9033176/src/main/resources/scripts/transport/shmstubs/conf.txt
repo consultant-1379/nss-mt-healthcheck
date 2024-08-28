@@ -1,0 +1,5 @@
+SW_FTP_SERVER="10.141.11.222"
+SW_FTP_ALIAS="mltn_config_ftp"
+SW_FTP_PORT="22"
+SW_FTP_USER="netsim"
+SW_FTP_PWD="netsim"

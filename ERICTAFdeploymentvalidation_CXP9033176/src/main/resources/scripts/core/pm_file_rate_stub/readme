@@ -1,0 +1,9 @@
+#pm_file_rate
+
+1) Start all the nodes of required simulations (all other nodes should be stopped).
+2) Run getNodes.sh script ( it will collect required data from all the started nodes).
+3) Run parallel.sh script
+   sh parallel.sh -f multi_pmfilecollection -n <NUM_NODES>
+   <NUM_NODES> - give number of nodes for which you want file_transfer_rate
+   eg- sh parallel.sh -f multi_pmfilecollection -n 30
+

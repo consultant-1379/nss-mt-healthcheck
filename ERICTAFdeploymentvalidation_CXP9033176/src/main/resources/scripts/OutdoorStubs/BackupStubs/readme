@@ -1,0 +1,47 @@
+#Backup for Minilink Outdoor Nodes
+
+PRE-REQUISITE :
+Take 2 netsim servers (Suppose Server A and B).
+- In server A place BackupStubs scripts folder.
+- In server B create a simulation with minilink nodes according to the test requirement.
+
+STEPS:
+
+1) Ensure that only the nodes of the simulation created in server B are started and then run the getnodes.sh script in server B.
+This script will collect the IPs of the started nodes in that particular server. All the IPs will be stored in allNodes.job file.
+
+2) Create a folder named "Files" in the same path where BackupStubs folder is present.
+And inside the folder create as many folders as the number of nodes you wish to run the use-case for.
+
+The name of these folders should be in the format: Node-n, where n is the node number.
+Ex:- For 10 nodes, the folders should be Node-1, Node-2,...... Node-10
+
+3) Copy the file allNodes.job to server A, to the scripts folder i.e.BackupStubs/ .
+
+4) Now in server A, run main.sh	script from BackupStubs folder.
+	sh main.sh <USE_CASE> <TOTAL_TIME> <RESPONSE_TIME> <INITIAL_COUNT_NODES> <FINAL_COUNT_NODES>
+
+This script will start the process for the use-case mentioned("backup", in this case). It can be made to run under specific conditions of Total time of the use-case for all nodes and Response Time of each command including ssh connection time.
+INITIAL_COUNT_NODES --> Number of nodes for which the use-case will run in the first iteration
+FINAL_COUNT_NODES --> Number of nodes for which the use-case will run in the last iteration after regular increments of 10 in each iteration.
+
+5) All the stats collected while running main.sh script will be stored in stats.job file.
+
+NOTE:- TIME SHOULD BE IN MILLISECONDS WHEREVER MENTIONED.
+
+DESCRIPTION FOR OTHER SCRIPTS:
+
+1) sh trigger.sh <NUMBER OF NODES> <USE_CASE> <TOTAL_TIME> <RESPONSE_TIME>
+This script can be directly triggered if you want to run the use-case for a specific count of nodes.
+
+2)sh backup.sh <NODE_IP> <PATH_FOR_DOWNLOAD> <NODE_NAME> <RESPONSE_TIME> <LOG_ENABLED(true)>
+This script can be triggered for a specific node to implement the use-case.
+
+3)sh Compare.sh <FILENAME>
+This script takes a text file, having time taken for individual nodes to complete the use-case, as input and checks if those times are well under the specific Total Time condition which is given as input to the main.sh script.
+
+4)collector.sh
+This script gives the max timeouts, for SSH connection and for each command.
+
+5)sh calculateCPU.sh <FILENAME>.sar <t1sec> <t2sec>
+This will generate CPU Usage and save the output in finalFile.txt.

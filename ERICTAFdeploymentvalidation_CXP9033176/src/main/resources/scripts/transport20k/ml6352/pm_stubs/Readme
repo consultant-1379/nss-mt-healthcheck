@@ -1,0 +1,16 @@
+Nodes VM:
+
+1. Run getNodes.sh to get the nodes details stored in nodeips.txt .
+2. Copy this to stubs vm.
+
+Stubs VM:
+
+1. Run shmmltnoutdoorstub.sh script  by giving function name get_pm_files.It internally uses mltn_pm.sh .
+Note: You should change the IP address in the mltn_pm.sh script( upload file command) to the current stubs VM IP.
+
+Note: Ideally it should fetch 2 files for each node(15min and 24hr). But, this script fetches only 1 file for each node. So, for example, To check capabilities of 10 nodes, one should run the usecase for 20 nodes (20 files).
+
+2. The files will be stored in /var/tmp/mini-link-6352/<Node_name> 
+
+3. If the files fetching takes more time than the usecase,then  calculate the CPU and runtime manually.
+
